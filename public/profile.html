@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <meta property="og:image" content="/favicon.svg">  <meta property="og:title" content="CyberBuddy - My Profile">
+  <meta property="og:description" content="Your cybersecurity learning progress">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cyberbuddy.rw">
+  <meta property="og:image" content="https://cyberbuddy.rw/favicon.svg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CyberBuddy - My Profile">
+  <meta name="twitter:description" content="Your cybersecurity learning progress">
+  <meta name="description" content="Your cybersecurity learning progress">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CyberBuddy - Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050a0f;--cyan:#00f5ff;--green:#00ff88;--yellow:#ffd700;--red:#ff3860;--text:#c8e6f0;--dim:#4a7a8a;--border:#1a3a4a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-height:100vh;padding:20px;background-image:linear-gradient(rgba(0,245,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.015) 1px,transparent 1px);background-size:40px 40px;}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:12px;margin-bottom:24px;}
+.logo{font-family:"Orbitron",monospace;font-size:16px;font-weight:900;background:linear-gradient(90deg,#00f5ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links a{color:var(--dim);text-decoration:none;font-family:"Share Tech Mono",monospace;font-size:12px;margin-left:16px;}
+.nav-links a:hover{color:var(--cyan);}
+.grid{display:grid;grid-template-columns:320px 1fr;gap:20px;max-width:900px;margin:0 auto;}
+@media(max-width:700px){.grid{grid-template-columns:1fr;}}
+.card{background:rgba(10,21,32,0.9);border:1px solid var(--border);border-radius:14px;padding:24px;}
+.avatar-circle{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(0,245,255,0.2),rgba(0,255,136,0.1));border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 14px;}
+.profile-name{font-family:"Orbitron",monospace;font-size:18px;font-weight:700;color:var(--text);text-align:center;margin-bottom:4px;}
+.profile-email{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--dim);text-align:center;margin-bottom:20px;}
+.stat-row{display:flex;justify-content:space-around;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:20px;}
+.stat{text-align:center;}
+.stat-val{font-family:"Orbitron",monospace;font-size:20px;font-weight:900;color:var(--cyan);}
+.stat-lbl{font-family:"Share Tech Mono",monospace;font-size:9px;color:var(--dim);letter-spacing:1px;margin-top:3px;}
+.section-title{font-family:"Orbitron",monospace;font-size:12px;letter-spacing:2px;color:var(--cyan);margin-bottom:14px;}
+.referral-box{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.ref-code{font-family:"Orbitron",monospace;font-size:16px;font-weight:900;color:var(--yellow);letter-spacing:3px;}
+.copy-btn{background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:6px;padding:6px 12px;color:var(--cyan);font-family:"Share Tech Mono",monospace;font-size:11px;cursor:pointer;}
+.copy-btn:hover{background:rgba(0,245,255,0.2);}
+input{width:100%;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:"Share Tech Mono",monospace;font-size:13px;outline:none;margin-bottom:10px;}
+input:focus{border-color:var(--cyan);}
+.btn{padding:10px 20px;border:none;border-radius:8px;font-family:"Orbitron",monospace;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;width:100%;margin-bottom:8px;}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:#050a0f;}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--dim);}
+.btn-outline:hover{border-color:var(--cyan);color:var(--cyan);}
+.msg{padding:8px 12px;border-radius:6px;font-family:"Share Tech Mono",monospace;font-size:12px;margin-bottom:10px;display:none;}
+.msg.ok{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:var(--green);}
+.msg.err{background:rgba(255,56,96,0.1);border:1px solid rgba(255,56,96,0.3);color:var(--red);}
+.badge-grid{display:flex;flex-wrap:wrap;gap:10px;}
+.badge{background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:10px;padding:10px 14px;text-align:center;}
+.badge-icon{font-size:24px;display:block;margin-bottom:4px;}
+.badge-name{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--yellow);}
+.progress-section{margin-top:20px;}
+.prog-row{display:flex;justify-content:space-between;font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--dim);margin-bottom:6px;}
+.prog-bar{height:6px;background:rgba(0,245,255,0.1);border-radius:3px;overflow:hidden;margin-bottom:14px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));}
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="logo">CYBERBUDDY</div>
+  <div class="nav-links">
+    <a href="/chat">💬 Chat</a>
+    <a href="/quiz">🎯 Quiz</a>
+    <a href="/leaderboard">🏆 Leaderboard</a>
+    <a href="/profile">👤 Profile</a>
+  </div>
+</div>
+
+<div class="grid">
+  <!-- LEFT COLUMN -->
+  <div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="avatar-circle">🛡️</div>
+      <div class="profile-name" id="pName">Loading...</div>
+      <div class="profile-email" id="pEmail"></div>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-val" id="pPoints">0</div><div class="stat-lbl">POINTS</div></div>
+        <div class="stat"><div class="stat-val" id="pQuizzes">0</div><div class="stat-lbl">QUIZZES</div></div>
+        <div class="stat"><div class="stat-val" id="pBadges">0</div><div class="stat-lbl">BADGES</div></div>
+      </div>
+      <!-- Progress to next reward -->
+      <div class="progress-section" id="progressSection"></div>
+    </div>
+
+    <!-- Referral -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="section-title">YOUR REFERRAL CODE</div>
+      <div class="referral-box">
+        <div class="ref-code" id="refCode">------</div>
+        <button class="copy-btn" onclick="copyCode()">COPY</button>
+      </div>
+      <p style="font-size:12px;color:var(--dim);font-family:Share Tech Mono,monospace;margin-bottom:12px">Share this code with friends. You get 20pts, they get 10pts!</p>
+      <div class="section-title">USE A FRIEND'S CODE</div>
+      <div id="refMsg" class="msg"></div>
+      <input type="text" id="refInput" placeholder="Enter referral code..."/>
+      <button class="btn btn-primary" onclick="useReferral()">APPLY CODE</button>
+    </div>
+
+    <!-- Change Password -->
+    <div class="card">
+      <div class="section-title">CHANGE PASSWORD</div>
+      <div id="pwMsg" class="msg"></div>
+      <input type="password" id="pwCurrent" placeholder="Current password"/>
+      <input type="password" id="pwNew" placeholder="New password (min 6 chars)"/>
+      <input type="password" id="pwConfirm" placeholder="Confirm new password"/>
+      <button class="btn btn-primary" onclick="changePassword()">UPDATE PASSWORD</button>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div>
+    <div class="card">
+      <div class="section-title">MY BADGES</div>
+      <div class="badge-grid" id="badgeGrid">
+        <div style="color:var(--dim);font-family:Share Tech Mono,monospace;font-size:12px">Complete quizzes to earn badges!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let myProfile = null;
+
+async function load() {
+  const me = await fetch("/api/auth/me").then(r=>r.json());
+  if (!me.loggedIn) { window.location.href="/login"; return; }
+  const data = await fetch("/api/profile").then(r=>r.json());
+  myProfile = data;
+  document.getElementById("pName").textContent = data.username;
+  document.getElementById("pEmail").textContent = data.email;
+  document.getElementById("pPoints").textContent = data.points || 0;
+  document.getElementById("pQuizzes").textContent = data.quizCount || 0;
+  document.getElementById("pBadges").textContent = (data.rewards||[]).length;
+  document.getElementById("refCode").textContent = data.referral_code || "NONE";
+
+  // Badges
+  const grid = document.getElementById("badgeGrid");
+  if (data.rewards?.length) {
+    grid.innerHTML = data.rewards.map(r=>`
+      <div class="badge">
+        <span class="badge-icon">${r.icon}</span>
+        <div class="badge-name">${r.title}</div>
+      </div>`).join("");
+  }
+
+  // Progress to next milestone
+  const milestones = [10,100,200,500,1000];
+  const pts = data.points || 0;
+  const next = milestones.find(m => m > pts);
+  if (next) {
+    const prev = milestones[milestones.indexOf(next)-1] || 0;
+    const pct = Math.round((pts-prev)/(next-prev)*100);
+    document.getElementById("progressSection").innerHTML = `
+      <div class="prog-row"><span>Progress to next badge</span><span>${pts}/${next} pts</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`;
+  }
+}
+
+function copyCode() {
+  const code = document.getElementById("refCode").textContent;
+  navigator.clipboard.writeText(code).then(()=>alert("Referral code copied: "+code));
+}
+
+async function useReferral() {
+  const code = document.getElementById("refInput").value.trim();
+  if (!code) return;
+  const data = await fetch("/api/referral/use",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code})}).then(r=>r.json());
+  const msg = document.getElementById("refMsg");
+  msg.style.display="block";
+  msg.className = "msg " + (data.error?"err":"ok");
+  msg.textContent = data.error || data.message;
+  if (!data.error) { document.getElementById("refInput").value=""; load(); }
+}
+
+async function changePassword() {
+  const current = document.getElementById("pwCurrent").value;
+  const newPw = document.getElementById("pwNew").value;
+  const confirm = document.getElementById("pwConfirm").value;
+  const msg = document.getElementById("pwMsg");
+  if (!current||!newPw||!confirm) { showMsg("pwMsg","err","All fields required."); return; }
+  if (newPw !== confirm) { showMsg("pwMsg","err","Passwords do not match."); return; }
+  if (newPw.length < 6) { showMsg("pwMsg","err","Password must be at least 6 characters."); return; }
+  const data = await fetch("/api/auth/change-password",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({current,newPassword:newPw})}).then(r=>r.json());
+  showMsg("pwMsg", data.error?"err":"ok", data.error||"Password updated successfully!");
+  if (!data.error) { document.getElementById("pwCurrent").value=""; document.getElementById("pwNew").value=""; document.getElementById("pwConfirm").value=""; }
+}
+
+function showMsg(id,type,text){ const el=document.getElementById(id); el.className="msg "+type; el.textContent=text; el.style.display="block"; }
+load();
+</script>
+</body></html>

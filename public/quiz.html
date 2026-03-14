@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <meta property="og:image" content="/favicon.svg">  <meta property="og:title" content="CyberBuddy - Daily Quiz">
+  <meta property="og:description" content="Test your cybersecurity knowledge and earn points">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cyberbuddy.rw">
+  <meta property="og:image" content="https://cyberbuddy.rw/favicon.svg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CyberBuddy - Daily Quiz">
+  <meta name="twitter:description" content="Test your cybersecurity knowledge and earn points">
+  <meta name="description" content="Test your cybersecurity knowledge and earn points">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CyberBuddy - Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050a0f;--cyan:#00f5ff;--green:#00ff88;--yellow:#ffd700;--red:#ff3860;--text:#c8e6f0;--dim:#4a7a8a;--border:#1a3a4a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-height:100vh;padding:20px;background-image:linear-gradient(rgba(0,245,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.015) 1px,transparent 1px);background-size:40px 40px;}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:12px;margin-bottom:24px;}
+.logo{font-family:"Orbitron",monospace;font-size:16px;font-weight:900;background:linear-gradient(90deg,#00f5ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links a{color:var(--dim);text-decoration:none;font-family:"Share Tech Mono",monospace;font-size:12px;margin-left:16px;transition:color 0.2s;}
+.nav-links a:hover{color:var(--cyan);}
+.page{display:none;} .page.active{display:block;}
+/* QUIZ LIST */
+.page-title{font-family:"Orbitron",monospace;font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.page-sub{color:var(--dim);font-family:"Share Tech Mono",monospace;font-size:12px;margin-bottom:24px;}
+.quiz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.quiz-card{background:rgba(10,21,32,0.9);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all 0.2s;cursor:pointer;}
+.quiz-card:hover{border-color:var(--cyan);box-shadow:0 0 20px rgba(0,245,255,0.1);}
+.quiz-card.done{border-color:rgba(0,255,136,0.3);opacity:0.8;}
+.quiz-cat{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:2px;color:var(--cyan);margin-bottom:8px;}
+.quiz-title{font-family:"Orbitron",monospace;font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.quiz-desc{font-size:13px;color:var(--dim);margin-bottom:14px;line-height:1.5;}
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;}
+.quiz-time{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--dim);}
+.btn{padding:8px 18px;border:none;border-radius:8px;font-family:"Orbitron",monospace;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:#050a0f;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 16px rgba(0,245,255,0.3);}
+.btn-done{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.3);}
+.score-badge{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);border-radius:20px;padding:3px 10px;font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--green);}
+/* QUIZ PLAY */
+.quiz-header{display:flex;justify-content:space-between;align-items:center;background:rgba(10,21,32,0.9);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:20px;}
+.quiz-play-title{font-family:"Orbitron",monospace;font-size:16px;font-weight:700;color:var(--cyan);}
+.timer{font-family:"Orbitron",monospace;font-size:22px;font-weight:900;color:var(--yellow);min-width:60px;text-align:right;}
+.timer.urgent{color:var(--red);animation:pulse 0.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.progress-bar{height:4px;background:rgba(0,245,255,0.1);border-radius:2px;margin-bottom:20px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width 0.3s;}
+.question-card{background:rgba(10,21,32,0.9);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px;}
+.q-num{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:10px;}
+.q-text{font-size:16px;font-weight:600;color:var(--text);margin-bottom:20px;line-height:1.6;}
+.options{display:grid;gap:10px;}
+.option{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.2s;}
+.option:hover{border-color:var(--cyan);background:rgba(0,245,255,0.05);}
+.option.selected{border-color:var(--cyan);background:rgba(0,245,255,0.1);}
+.option.correct{border-color:var(--green);background:rgba(0,255,136,0.1);}
+.option.wrong{border-color:var(--red);background:rgba(255,56,96,0.1);}
+.opt-letter{width:28px;height:28px;border-radius:50%;background:rgba(0,245,255,0.1);border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-family:"Orbitron",monospace;font-size:11px;font-weight:700;color:var(--cyan);flex-shrink:0;}
+.opt-text{font-size:13.5px;color:var(--text);}
+.explanation{background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.2);border-radius:8px;padding:12px;margin-top:10px;font-size:13px;color:var(--green);display:none;}
+.submit-area{text-align:center;margin-top:24px;}
+.btn-lg{padding:14px 40px;font-size:13px;}
+/* RESULTS */
+.result-card{background:rgba(10,21,32,0.9);border:1px solid var(--border);border-radius:14px;padding:32px;text-align:center;margin-bottom:20px;}
+.result-score{font-family:"Orbitron",monospace;font-size:52px;font-weight:900;background:linear-gradient(90deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.result-label{font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--dim);letter-spacing:2px;margin-bottom:16px;}
+.result-pts{font-family:"Orbitron",monospace;font-size:20px;color:var(--yellow);}
+.reward-popup{background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.3);border-radius:12px;padding:16px;margin:16px 0;text-align:center;}
+.reward-icon{font-size:36px;margin-bottom:6px;}
+.reward-title{font-family:"Orbitron",monospace;font-size:14px;color:var(--yellow);}
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="logo">CYBERBUDDY</div>
+  <div class="nav-links">
+    <a href="/chat">💬 Chat</a>
+    <a href="/quiz">🎯 Quiz</a>
+    <a href="/leaderboard">🏆 Leaderboard</a>
+    <a href="/profile">👤 Profile</a>
+  </div>
+</div>
+
+<!-- QUIZ LIST -->
+<div class="page active" id="listPage">
+  <div class="page-title">Daily Cyber Challenges</div>
+  <div class="page-sub">// TEST YOUR CYBERSECURITY KNOWLEDGE AND EARN POINTS //</div>
+  <div class="quiz-grid" id="quizGrid">Loading quizzes...</div>
+</div>
+
+<!-- QUIZ PLAY -->
+<div class="page" id="playPage">
+  <div class="quiz-header">
+    <div class="quiz-play-title" id="playTitle">Quiz</div>
+    <div class="timer" id="timer">5:00</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="questionsContainer"></div>
+  <div class="submit-area">
+    <button class="btn btn-primary btn-lg" onclick="submitQuiz()">SUBMIT ANSWERS</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="page" id="resultPage">
+  <div class="result-card">
+    <div class="result-label">YOUR SCORE</div>
+    <div class="result-score" id="resultScore">0%</div>
+    <div class="result-pts" id="resultPts">+0 points earned</div>
+  </div>
+  <div id="newRewards"></div>
+  <div id="resultDetails"></div>
+  <div style="text-align:center;margin-top:20px;display:flex;gap:12px;justify-content:center;">
+    <button class="btn btn-primary" onclick="showPage('listPage')">MORE QUIZZES</button>
+    <button class="btn btn-primary" onclick="window.location='/leaderboard'">SEE LEADERBOARD</button>
+  </div>
+</div>
+
+<script>
+let currentAttemptId = null;
+let currentQuestions = [];
+let userAnswers = {};
+let timerInterval = null;
+let timeLeft = 60;
+
+async function init() {
+  const me = await fetch("/api/auth/me").then(r=>r.json());
+  if (!me.loggedIn) { window.location.href="/login"; return; }
+  loadQuizzes();
+}
+
+async function loadQuizzes() {
+  const data = await fetch("/api/quizzes").then(r=>r.json());
+  const grid = document.getElementById("quizGrid");
+  if (!data.quizzes?.length) { grid.innerHTML = "<p style='color:var(--dim);font-family:Share Tech Mono,monospace'>No quizzes available yet.</p>"; return; }
+  grid.innerHTML = data.quizzes.map(q => `
+    <div class="quiz-card ${q.attempted?'done':''}">
+      <div class="quiz-cat">${q.is_daily?'📅 DAILY QUIZ':'📚 '+q.category.toUpperCase()}</div>
+      <div class="quiz-title">${q.title}</div>
+      <div class="quiz-desc">${q.description||''}</div>
+      <div class="quiz-meta">
+        <span class="quiz-time">⏱ ${Math.floor(q.time_limit/60)}:${String(q.time_limit%60).padStart(2,'0')} mins</span>
+        ${q.attempted 
+          ? `<span class="score-badge">✓ ${q.myScore} pts</span>` 
+          : `<button class="btn btn-primary" onclick="startQuiz('${q.id}')">START →</button>`}
+      </div>
+    </div>`).join("");
+}
+
+async function startQuiz(quizId) {
+  const data = await fetch("/api/quizzes/"+quizId+"/start",{method:"POST"}).then(r=>r.json());
+  if (data.error) { alert(data.error); return; }
+  currentAttemptId = data.attemptId;
+  currentQuestions = data.questions;
+  userAnswers = {};
+  document.getElementById("playTitle").textContent = data.quiz.title;
+  timeLeft = data.quiz.time_limit;
+  renderQuestions();
+  startTimer();
+  showPage("playPage");
+}
+
+function renderQuestions() {
+  const container = document.getElementById("questionsContainer");
+  container.innerHTML = currentQuestions.map((q,i) => `
+    <div class="question-card" id="qcard-${q.id}">
+      <div class="q-num">QUESTION ${i+1} OF ${currentQuestions.length} • ${q.points} POINTS</div>
+      <div class="q-text">${q.question}</div>
+      <div class="options">
+        ${Object.entries(q.options).map(([letter,text]) => `
+          <div class="option" id="opt-${q.id}-${letter}" onclick="selectAnswer('${q.id}','${letter}')">
+            <div class="opt-letter">${letter}</div>
+            <div class="opt-text">${text}</div>
+          </div>`).join("")}
+      </div>
+    </div>`).join("");
+}
+
+function selectAnswer(qId, letter) {
+  // Deselect all options for this question
+  ["A","B","C","D"].forEach(l => {
+    document.getElementById("opt-"+qId+"-"+l)?.classList.remove("selected");
+  });
+  document.getElementById("opt-"+qId+"-"+letter)?.classList.add("selected");
+  userAnswers[qId] = letter;
+  // Update progress
+  const answered = Object.keys(userAnswers).length;
+  document.getElementById("progressFill").style.width = (answered/currentQuestions.length*100)+"%";
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    const mins = Math.floor(timeLeft/60);
+    const secs = timeLeft%60;
+    document.getElementById("timer").textContent = mins+":"+String(secs).padStart(2,"0");
+    if (timeLeft <= 10) document.getElementById("timer").classList.add("urgent");
+    if (timeLeft <= 0) { clearInterval(timerInterval); submitQuiz(); }
+  }, 1000);
+}
+
+async function submitQuiz() {
+  clearInterval(timerInterval);
+  const data = await fetch("/api/quizzes/attempts/"+currentAttemptId+"/submit",{
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ answers: userAnswers })
+  }).then(r=>r.json());
+  if (data.error) { alert(data.error); return; }
+  showResults(data);
+}
+
+function showResults(data) {
+  document.getElementById("resultScore").textContent = data.percentage+"%";
+  document.getElementById("resultPts").textContent = "+"+data.score+" points earned! (Total: "+data.totalUserPoints+" pts)";
+  // New rewards
+  const rewardsDiv = document.getElementById("newRewards");
+  rewardsDiv.innerHTML = data.newRewards?.map(r=>`
+    <div class="reward-popup">
+      <div class="reward-icon">${r.icon}</div>
+      <div class="reward-title">🎉 NEW BADGE: ${r.title}</div>
+    </div>`).join("") || "";
+  // Answer details
+  document.getElementById("resultDetails").innerHTML = data.results.map((r,i) => {
+    const q = currentQuestions[i];
+    return `<div class="question-card">
+      <div class="q-num">${r.isCorrect?"✅ CORRECT":"❌ WRONG"}</div>
+      <div class="q-text">${q.question}</div>
+      <div class="options">
+        ${Object.entries(q.options).map(([l,t]) => `
+          <div class="option ${l===r.correct?"correct":l===r.userAnswer&&!r.isCorrect?"wrong":""}">
+            <div class="opt-letter">${l}</div><div class="opt-text">${t}</div>
+          </div>`).join("")}
+      </div>
+      ${r.explanation?`<div class="explanation" style="display:block">💡 ${r.explanation}</div>`:""}
+    </div>`;
+  }).join("");
+  showPage("resultPage");
+}
+
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+init();
+</script>
+</body></html>

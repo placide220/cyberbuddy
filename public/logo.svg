@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#050a0f"/>
+      <stop offset="100%" style="stop-color:#0a1a2e"/>
+    </linearGradient>
+    <linearGradient id="cyanGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00f5ff"/>
+      <stop offset="100%" style="stop-color:#00ff88"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00f5ff;stop-opacity:0.15"/>
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0.05"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="strongGlow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="circle"><circle cx="200" cy="200" r="185"/></clipPath>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="200" cy="200" r="195" fill="url(#bgGrad)" stroke="url(#cyanGreen)" stroke-width="2" opacity="0.8"/>
+
+  <!-- Grid lines -->
+  <g clip-path="url(#circle)" opacity="0.07" stroke="#00f5ff" stroke-width="0.5">
+    <line x1="0" y1="50" x2="400" y2="50"/><line x1="0" y1="100" x2="400" y2="100"/>
+    <line x1="0" y1="150" x2="400" y2="150"/><line x1="0" y1="200" x2="400" y2="200"/>
+    <line x1="0" y1="250" x2="400" y2="250"/><line x1="0" y1="300" x2="400" y2="300"/>
+    <line x1="0" y1="350" x2="400" y2="350"/>
+    <line x1="50" y1="0" x2="50" y2="400"/><line x1="100" y1="0" x2="100" y2="400"/>
+    <line x1="150" y1="0" x2="150" y2="400"/><line x1="200" y1="0" x2="200" y2="400"/>
+    <line x1="250" y1="0" x2="250" y2="400"/><line x1="300" y1="0" x2="300" y2="400"/>
+    <line x1="350" y1="0" x2="350" y2="400"/>
+  </g>
+
+  <!-- Outer ring -->
+  <circle cx="200" cy="200" r="175" fill="none" stroke="url(#cyanGreen)" stroke-width="1" opacity="0.3" stroke-dasharray="8 4"/>
+
+  <!-- Shield body -->
+  <path d="M200 80 L290 115 L290 195 Q290 260 200 305 Q110 260 110 195 L110 115 Z"
+        fill="url(#shieldGrad)" stroke="url(#cyanGreen)" stroke-width="2.5" filter="url(#glow)"/>
+
+  <!-- Shield inner highlight -->
+  <path d="M200 95 L278 126 L278 193 Q278 250 200 290 Q122 250 122 193 L122 126 Z"
+        fill="none" stroke="url(#cyanGreen)" stroke-width="1" opacity="0.3"/>
+
+  <!-- Robot face -->
+  <!-- Head -->
+  <rect x="163" y="135" width="74" height="62" rx="8" ry="8"
+        fill="#0a1a2e" stroke="url(#cyanGreen)" stroke-width="1.5" filter="url(#glow)"/>
+
+  <!-- Eyes -->
+  <rect x="174" y="150" width="18" height="14" rx="3"
+        fill="url(#cyanGreen)" opacity="0.9" filter="url(#strongGlow)"/>
+  <rect x="208" y="150" width="18" height="14" rx="3"
+        fill="url(#cyanGreen)" opacity="0.9" filter="url(#strongGlow)"/>
+
+  <!-- Eye pupils -->
+  <rect x="180" y="154" width="6" height="6" rx="1" fill="#050a0f"/>
+  <rect x="214" y="154" width="6" height="6" rx="1" fill="#050a0f"/>
+
+  <!-- Mouth -->
+  <rect x="174" y="174" width="52" height="10" rx="3"
+        fill="#0a1a2e" stroke="#00f5ff" stroke-width="1" opacity="0.8"/>
+  <!-- Mouth teeth pattern -->
+  <rect x="178" y="176" width="8" height="6" rx="1" fill="#00f5ff" opacity="0.6"/>
+  <rect x="190" y="176" width="8" height="6" rx="1" fill="#00f5ff" opacity="0.6"/>
+  <rect x="202" y="176" width="8" height="6" rx="1" fill="#00f5ff" opacity="0.6"/>
+  <rect x="214" y="176" width="8" height="6" rx="1" fill="#00f5ff" opacity="0.6"/>
+
+  <!-- Antenna -->
+  <line x1="200" y1="135" x2="200" y2="115" stroke="url(#cyanGreen)" stroke-width="2" filter="url(#glow)"/>
+  <circle cx="200" cy="110" r="6" fill="url(#cyanGreen)" filter="url(#strongGlow)"/>
+  <circle cx="200" cy="110" r="3" fill="#050a0f"/>
+
+  <!-- Ears / side panels -->
+  <rect x="150" y="148" width="13" height="22" rx="4"
+        fill="#0a1a2e" stroke="#00f5ff" stroke-width="1.5" opacity="0.8"/>
+  <rect x="237" y="148" width="13" height="22" rx="4"
+        fill="#0a1a2e" stroke="#00f5ff" stroke-width="1.5" opacity="0.8"/>
+  <rect x="153" y="154" width="7" height="4" rx="1" fill="#00f5ff" opacity="0.5"/>
+  <rect x="240" y="154" width="7" height="4" rx="1" fill="#00f5ff" opacity="0.5"/>
+  <rect x="153" y="161" width="7" height="4" rx="1" fill="#00ff88" opacity="0.5"/>
+  <rect x="240" y="161" width="7" height="4" rx="1" fill="#00ff88" opacity="0.5"/>
+
+  <!-- Body / torso -->
+  <rect x="172" y="203" width="56" height="38" rx="6"
+        fill="#0a1a2e" stroke="url(#cyanGreen)" stroke-width="1.5" filter="url(#glow)"/>
+
+  <!-- Chest circuit lines -->
+  <line x1="182" y1="215" x2="218" y2="215" stroke="#00f5ff" stroke-width="1" opacity="0.5"/>
+  <line x1="182" y1="222" x2="200" y2="222" stroke="#00ff88" stroke-width="1" opacity="0.5"/>
+  <line x1="205" y1="222" x2="218" y2="222" stroke="#00f5ff" stroke-width="1" opacity="0.5"/>
+  <circle cx="190" cy="230" r="3" fill="#00f5ff" opacity="0.7"/>
+  <circle cx="200" cy="230" r="3" fill="#00ff88" opacity="0.7"/>
+  <circle cx="210" cy="230" r="3" fill="#00f5ff" opacity="0.7"/>
+
+  <!-- Lock icon on chest -->
+  <rect x="193" y="218" width="14" height="10" rx="2" fill="none" stroke="url(#cyanGreen)" stroke-width="1.2"/>
+  <path d="M196 218 Q196 213 200 213 Q204 213 204 218" fill="none" stroke="url(#cyanGreen)" stroke-width="1.2"/>
+  <circle cx="200" cy="223" r="1.5" fill="url(#cyanGreen)"/>
+
+  <!-- Arms -->
+  <rect x="140" y="205" width="30" height="14" rx="5"
+        fill="#0a1a2e" stroke="#00f5ff" stroke-width="1.2" opacity="0.85"/>
+  <rect x="230" y="205" width="30" height="14" rx="5"
+        fill="#0a1a2e" stroke="#00f5ff" stroke-width="1.2" opacity="0.85"/>
+
+  <!-- CYBERBUDDY text -->
+  <text x="200" y="272" font-family="'Courier New', monospace" font-size="22" font-weight="bold"
+        text-anchor="middle" fill="url(#cyanGreen)" filter="url(#glow)" letter-spacing="3">
+    CYBERBUDDY
+  </text>
+
+  <!-- Tagline -->
+  <text x="200" y="292" font-family="'Courier New', monospace" font-size="9"
+        text-anchor="middle" fill="#4a8a9a" letter-spacing="2">
+    // STAY CYBER SAFE //
+  </text>
+
+  <!-- Corner decorations -->
+  <g opacity="0.4" stroke="#00f5ff" stroke-width="1" fill="none">
+    <path d="M25 25 L25 45 L45 45"/><path d="M375 25 L375 45 L355 45"/>
+    <path d="M25 375 L25 355 L45 355"/><path d="M375 375 L375 355 L355 355"/>
+  </g>
+
+  <!-- Scanline effect -->
+  <rect x="5" y="5" width="390" height="390" rx="195"
+        fill="url(#bgGrad)" opacity="0.05"/>
+</svg>

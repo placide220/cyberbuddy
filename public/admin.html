@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <meta property="og:image" content="/favicon.svg"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CyberBuddy — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050a0f;--cyan:#00f5ff;--green:#00ff88;--yellow:#ffd700;--red:#ff3860;--text:#c8e6f0;--dim:#4a7a8a;--border:#1a3a4a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-height:100vh;padding:20px;background-image:linear-gradient(rgba(0,245,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.015) 1px,transparent 1px);background-size:40px 40px;}
+
+/* ── LOGIN SCREEN ── */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;position:fixed;inset:0;background:var(--bg);z-index:100;}
+.login-card{background:rgba(10,21,32,0.98);border:1px solid var(--cyan);border-radius:16px;padding:40px;width:100%;max-width:380px;text-align:center;}
+.admin-logo{font-family:"Orbitron",monospace;font-size:20px;font-weight:900;background:linear-gradient(90deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+.admin-sub{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--red);letter-spacing:3px;margin-bottom:28px;}
+.login-card label{display:block;text-align:left;font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:6px;}
+.login-card input{width:100%;background:rgba(0,0,0,0.5);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:"Share Tech Mono",monospace;font-size:13px;outline:none;margin-bottom:14px;}
+.login-card input:focus{border-color:var(--cyan);}
+.btn-login{width:100%;padding:13px;border:none;border-radius:9px;font-family:"Orbitron",monospace;font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--green));color:#050a0f;transition:all 0.2s;}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(0,245,255,0.3);}
+.login-err{background:rgba(255,56,96,0.1);border:1px solid rgba(255,56,96,0.3);border-radius:8px;padding:10px;font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--red);margin-bottom:14px;display:none;}
+
+/* ── DASHBOARD ── */
+#dashboard{display:none;}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:12px;margin-bottom:24px;}
+.logo{font-family:"Orbitron",monospace;font-size:15px;font-weight:900;background:linear-gradient(90deg,#00f5ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.admin-badge{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--red);letter-spacing:2px;}
+.logout-btn{background:none;border:1px solid rgba(255,56,96,0.3);border-radius:6px;padding:6px 14px;color:var(--red);font-family:"Share Tech Mono",monospace;font-size:11px;cursor:pointer;}
+.logout-btn:hover{background:rgba(255,56,96,0.1);}
+
+/* stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:rgba(10,21,32,0.9);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+.stat-val{font-family:"Orbitron",monospace;font-size:32px;font-weight:900;color:var(--cyan);}
+.stat-val.green{color:var(--green);}
+.stat-val.yellow{color:var(--yellow);}
+.stat-lbl{font-family:"Share Tech Mono",monospace;font-size:9px;color:var(--dim);letter-spacing:2px;margin-top:6px;}
+
+/* tabs */
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{padding:9px 18px;border:1px solid var(--border);border-radius:8px;background:none;color:var(--dim);font-family:"Share Tech Mono",monospace;font-size:11px;cursor:pointer;transition:all 0.2s;}
+.tab.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.08);}
+
+/* panels */
+.panel{display:none;} .panel.active{display:block;}
+.card{background:rgba(10,21,32,0.9);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px;}
+.section-title{font-family:"Orbitron",monospace;font-size:12px;letter-spacing:2px;color:var(--cyan);margin-bottom:14px;}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:2px;color:var(--dim);padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);}
+.tbl td{padding:12px;font-size:13px;border-bottom:1px solid rgba(26,58,74,0.4);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(0,245,255,0.02);}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-family:"Share Tech Mono",monospace;font-size:10px;}
+.badge.premium{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);color:var(--yellow);}
+.badge.free{background:rgba(74,122,138,0.1);border:1px solid rgba(74,122,138,0.3);color:var(--dim);}
+.badge.safe{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:var(--green);}
+.badge.scam{background:rgba(255,56,96,0.1);border:1px solid rgba(255,56,96,0.3);color:var(--red);}
+.badge.suspicious{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);color:var(--yellow);}
+
+/* quiz form */
+input,select,textarea{width:100%;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:"Share Tech Mono",monospace;font-size:13px;outline:none;margin-bottom:10px;}
+input:focus,select:focus,textarea:focus{border-color:var(--cyan);}
+select option{background:#0a1520;}
+textarea{resize:vertical;min-height:60px;}
+.btn{padding:10px 20px;border:none;border-radius:8px;font-family:"Orbitron",monospace;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:#050a0f;}
+.btn-add{background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.2);color:var(--cyan);width:100%;margin-bottom:10px;}
+.q-block{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;}
+.q-num{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--dim);margin-bottom:10px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:600px){.grid2{grid-template-columns:1fr;}}
+.msg{padding:10px 14px;border-radius:8px;font-family:"Share Tech Mono",monospace;font-size:12px;margin-bottom:12px;display:none;}
+.msg.ok{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:var(--green);}
+.msg.err{background:rgba(255,56,96,0.1);border:1px solid rgba(255,56,96,0.3);color:var(--red);}
+.prize-winner{background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:10px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.prize-name{font-family:"Orbitron",monospace;font-size:13px;color:var(--yellow);}
+.prize-info{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--dim);margin-top:4px;}
+.btn-award{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);color:var(--yellow);padding:7px 14px;border-radius:6px;font-family:"Share Tech Mono",monospace;font-size:11px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="admin-logo">CYBERBUDDY</div>
+    <div class="admin-sub">⚠️ ADMIN ACCESS ONLY</div>
+    <div id="loginErr" class="login-err"></div>
+    <label>ADMIN EMAIL</label>
+    <input type="email" id="adminEmail" placeholder="admin@company.com"/>
+    <label>ADMIN PASSWORD</label>
+    <input type="password" id="adminPass" placeholder="••••••••••••"/>
+    <button class="btn-login" onclick="adminLogin()">ENTER DASHBOARD</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="nav">
+    <div>
+      <div class="logo">CYBERBUDDY ADMIN</div>
+      <div class="admin-badge">⚠️ RESTRICTED ACCESS</div>
+    </div>
+    <button class="logout-btn" onclick="adminLogout()">LOGOUT</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-val" id="sTotal">-</div><div class="stat-lbl">TOTAL USERS</div></div>
+    <div class="stat-card"><div class="stat-val green" id="sPremium">-</div><div class="stat-lbl">PREMIUM USERS</div></div>
+    <div class="stat-card"><div class="stat-val yellow" id="sRevenue">-</div><div class="stat-lbl">REVENUE (USD)</div></div>
+    <div class="stat-card"><div class="stat-val" id="sQuizzes">-</div><div class="stat-lbl">QUIZZES</div></div>
+    <div class="stat-card"><div class="stat-val" id="sAttempts">-</div><div class="stat-lbl">COMPLETIONS</div></div>
+    <div class="stat-card"><div class="stat-val" id="sScans">-</div><div class="stat-lbl">IMAGE SCANS</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('users',this)">👥 USERS</button>
+    <button class="tab" onclick="showTab('prizes',this)">🏆 PRIZES</button>
+    <button class="tab" onclick="showTab('create',this)">➕ CREATE QUIZ</button>
+    <button class="tab" onclick="showTab('payments',this)">💳 PAYMENTS</button>
+  </div>
+
+  <!-- USERS PANEL -->
+  <div class="panel active" id="panel-users">
+    <div class="card">
+      <div class="section-title">ALL USERS</div>
+      <div style="overflow-x:auto;">
+        <table class="tbl">
+          <thead><tr>
+            <th>USERNAME</th><th>EMAIL</th><th>POINTS</th><th>STATUS</th><th>JOINED</th>
+          </tr></thead>
+          <tbody id="usersBody"><tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIZES PANEL -->
+  <div class="panel" id="panel-prizes">
+    <div class="card">
+      <div class="section-title">🏆 QUIZ PRIZE WINNERS</div>
+      <p style="font-family:Share Tech Mono,monospace;font-size:12px;color:var(--dim);margin-bottom:16px">These are the top scorers on premium prize quizzes. Send their prize via MTN MoMo manually.</p>
+      <div id="prizeList">Loading...</div>
+    </div>
+  </div>
+
+  <!-- CREATE QUIZ PANEL -->
+  <div class="panel" id="panel-create">
+    <div class="card">
+      <div class="section-title">CREATE NEW QUIZ</div>
+      <div id="createMsg" class="msg"></div>
+      <div class="grid2">
+        <div>
+          <label style="font-family:Share Tech Mono,monospace;font-size:10px;letter-spacing:2px;color:var(--dim);display:block;margin-bottom:6px;">TITLE *</label>
+          <input type="text" id="qTitle" placeholder="Quiz title"/>
+        </div>
+        <div>
+          <label style="font-family:Share Tech Mono,monospace;font-size:10px;letter-spacing:2px;color:var(--dim);display:block;margin-bottom:6px;">CATEGORY</label>
+          <select id="qCat">
+            <option value="general">General</option>
+            <option value="phishing">Phishing</option>
+            <option value="passwords">Passwords</option>
+            <option value="malware">Malware</option>
+            <option value="social">Social Media</option>
+            <option value="2fa">2FA</option>
+          </select>
+        </div>
+      </div>
+      <textarea id="qDesc" placeholder="Description (optional)"></textarea>
+      <div class="grid2">
+        <div>
+          <label style="font-family:Share Tech Mono,monospace;font-size:10px;letter-spacing:2px;color:var(--dim);display:block;margin-bottom:6px;">TIME LIMIT (seconds)</label>
+          <input type="number" id="qTime" value="300"/>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;padding-top:16px;">
+          <label style="display:flex;align-items:center;gap:8px;font-family:Share Tech Mono,monospace;font-size:12px;color:var(--dim);cursor:pointer;">
+            <input type="checkbox" id="qDaily" style="width:auto;margin:0"/> Daily Quiz
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-family:Share Tech Mono,monospace;font-size:12px;color:var(--yellow);cursor:pointer;">
+            <input type="checkbox" id="qPremium" style="width:auto;margin:0"/> Premium Only
+          </label>
+        </div>
+      </div>
+      <div id="prizeFields" style="display:none">
+        <input type="text" id="qPrize" placeholder="Prize title e.g. 🏆 $5 MoMo Prize"/>
+        <input type="text" id="qPrizeDesc" placeholder="Prize description e.g. Top scorer wins $5 via MTN MoMo"/>
+      </div>
+      <div class="section-title" style="margin-top:6px">QUESTIONS</div>
+      <div id="questionsList"></div>
+      <button class="btn btn-add" onclick="addQuestion()">+ ADD QUESTION</button>
+      <button class="btn btn-primary" style="width:100%;padding:13px;" onclick="createQuiz()">CREATE QUIZ</button>
+    </div>
+  </div>
+
+  <!-- PAYMENTS PANEL -->
+  <div class="panel" id="panel-payments">
+    <div class="card">
+      <div class="section-title">PAYMENT HISTORY</div>
+      <div style="overflow-x:auto;">
+        <table class="tbl">
+          <thead><tr>
+            <th>USER</th><th>AMOUNT</th><th>MONTHS</th><th>STATUS</th><th>DATE</th><th>TX REF</th>
+          </tr></thead>
+          <tbody id="paymentsBody"><tr><td colspan="6" style="text-align:center;color:var(--dim);padding:20px">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let ADMIN_PW = "";
+let qCount = 0;
+
+// ── LOGIN ──────────────────────────────────────
+async function adminLogin() {
+  const email = document.getElementById("adminEmail").value.trim();
+  const pass  = document.getElementById("adminPass").value;
+  const err   = document.getElementById("loginErr");
+  // Check against env admin password via API
+  const data = await fetch("/api/admin/login", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ email, password: pass })
+  }).then(r=>r.json());
+  if (data.error) {
+    err.textContent = data.error; err.style.display="block"; return;
+  }
+  ADMIN_PW = pass;
+  sessionStorage.setItem("adminPw", pass);
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+  loadAll();
+}
+
+function adminLogout() {
+  sessionStorage.removeItem("adminPw");
+  ADMIN_PW = "";
+  document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("dashboard").style.display = "none";
+}
+
+document.getElementById("adminPass").addEventListener("keydown", e => { if(e.key==="Enter") adminLogin(); });
+
+// Auto-login if session exists
+window.addEventListener("load", () => {
+  const saved = sessionStorage.getItem("adminPw");
+  if (saved) { document.getElementById("adminPass").value = saved; ADMIN_PW = saved; adminLogin(); }
+});
+
+// ── API HELPER ─────────────────────────────────
+async function api(url, method="GET", body=null) {
+  const opts = { method, headers: { "Content-Type":"application/json", "x-admin-password": ADMIN_PW } };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(url, opts).then(r=>r.json());
+}
+
+// ── LOAD ALL ───────────────────────────────────
+async function loadAll() {
+  const stats = await api("/api/admin/stats");
+  document.getElementById("sTotal").textContent    = stats.users || 0;
+  document.getElementById("sPremium").textContent  = stats.premium || 0;
+  document.getElementById("sRevenue").textContent  = "$"+(stats.revenue||"0.00");
+  document.getElementById("sQuizzes").textContent  = stats.quizzes || 0;
+  document.getElementById("sAttempts").textContent = stats.attempts || 0;
+  document.getElementById("sScans").textContent    = stats.scans || 0;
+  loadUsers(stats.users_list || []);
+  loadPrizes(stats.prize_winners || []);
+  loadPayments(stats.payments || []);
+  addQuestion();
+}
+
+function loadUsers(users) {
+  const body = document.getElementById("usersBody");
+  if (!users.length) { body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">No users yet</td></tr>'; return; }
+  body.innerHTML = users.map(u => `<tr>
+    <td style="font-family:Share Tech Mono,monospace">${u.username}</td>
+    <td style="color:var(--dim);font-size:12px">${u.email}</td>
+    <td style="font-family:Orbitron,monospace;color:var(--cyan)">${u.points}</td>
+    <td><span class="badge ${u.is_premium?'premium':'free'}">${u.is_premium?'⭐ PREMIUM':'FREE'}</span></td>
+    <td style="color:var(--dim);font-size:12px">${new Date(u.created_at).toLocaleDateString()}</td>
+  </tr>`).join("");
+}
+
+function loadPrizes(winners) {
+  const el = document.getElementById("prizeList");
+  if (!winners.length) { el.innerHTML='<p style="font-family:Share Tech Mono,monospace;font-size:12px;color:var(--dim)">No prize quiz winners yet. Create a premium quiz with a prize to get started.</p>'; return; }
+  el.innerHTML = winners.map(w => `
+    <div class="prize-winner">
+      <div>
+        <div class="prize-name">🥇 ${w.username}</div>
+        <div class="prize-info">${w.quiz_title} · Score: ${w.score}/${w.total_points} pts · ${new Date(w.completed_at).toLocaleDateString()}</div>
+        <div class="prize-info" style="color:var(--yellow);margin-top:2px">Prize: ${w.prize}</div>
+      </div>
+      <button class="btn-award" onclick="markAwarded('${w.id}', this)">MARK AWARDED</button>
+    </div>`).join("");
+}
+
+function loadPayments(payments) {
+  const body = document.getElementById("paymentsBody");
+  if (!payments.length) { body.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--dim);padding:20px">No payments yet</td></tr>'; return; }
+  body.innerHTML = payments.map(p => `<tr>
+    <td style="font-family:Share Tech Mono,monospace">${p.username||"-"}</td>
+    <td style="color:var(--green);font-family:Orbitron,monospace">$${p.amount}</td>
+    <td style="text-align:center">${p.months}</td>
+    <td><span class="badge ${p.status==='completed'?'safe':p.status==='failed'?'scam':'suspicious'}">${p.status.toUpperCase()}</span></td>
+    <td style="color:var(--dim);font-size:12px">${new Date(p.created_at).toLocaleDateString()}</td>
+    <td style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--dim)">${p.tx_ref||"-"}</td>
+  </tr>`).join("");
+}
+
+async function markAwarded(attemptId, btn) {
+  btn.textContent = "✅ AWARDED"; btn.disabled = true; btn.style.color = "var(--green)";
+}
+
+// ── TABS ──────────────────────────────────────
+function showTab(name, btn) {
+  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("panel-"+name).classList.add("active");
+}
+
+// ── QUIZ BUILDER ──────────────────────────────
+document.getElementById("qPremium").addEventListener("change", e => {
+  document.getElementById("prizeFields").style.display = e.target.checked ? "block" : "none";
+});
+
+function addQuestion() {
+  qCount++;
+  const div = document.createElement("div");
+  div.className="q-block";
+  div.innerHTML=`
+    <div class="q-num">QUESTION ${qCount} <span style="float:right;cursor:pointer;color:var(--red)" onclick="this.closest('.q-block').remove()">✕ REMOVE</span></div>
+    <textarea placeholder="Question text *" class="q-text" rows="2"></textarea>
+    <input placeholder="Option A *" class="q-a"/>
+    <input placeholder="Option B *" class="q-b"/>
+    <input placeholder="Option C" class="q-c"/>
+    <input placeholder="Option D" class="q-d"/>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
+      <label style="font-family:Share Tech Mono,monospace;font-size:10px;color:var(--dim);letter-spacing:2px;white-space:nowrap">CORRECT:</label>
+      <select class="q-correct" style="margin-bottom:0">
+        <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+      </select>
+      <label style="font-family:Share Tech Mono,monospace;font-size:10px;color:var(--dim);letter-spacing:2px;white-space:nowrap">POINTS:</label>
+      <input type="number" class="q-points" value="10" style="margin-bottom:0;width:80px"/>
+    </div>
+    <input placeholder="Explanation (optional)" class="q-explanation"/>`;
+  document.getElementById("questionsList").appendChild(div);
+}
+
+async function createQuiz() {
+  const title = document.getElementById("qTitle").value.trim();
+  if (!title) { show("createMsg","err","Title is required."); return; }
+  const questions = [];
+  document.querySelectorAll(".q-block").forEach(b => {
+    const q = {
+      question: b.querySelector(".q-text").value.trim(),
+      option_a: b.querySelector(".q-a").value.trim(),
+      option_b: b.querySelector(".q-b").value.trim(),
+      option_c: b.querySelector(".q-c").value.trim()||"N/A",
+      option_d: b.querySelector(".q-d").value.trim()||"N/A",
+      correct:  b.querySelector(".q-correct").value,
+      explanation: b.querySelector(".q-explanation").value.trim(),
+      points: parseInt(b.querySelector(".q-points").value)||10,
+    };
+    if (q.question && q.option_a && q.option_b) questions.push(q);
+  });
+  if (!questions.length) { show("createMsg","err","Add at least one question."); return; }
+  const isPremium = document.getElementById("qPremium").checked;
+  const data = await api("/api/admin/quizzes","POST",{
+    title, description:document.getElementById("qDesc").value,
+    category:document.getElementById("qCat").value,
+    time_limit:parseInt(document.getElementById("qTime").value)||300,
+    is_daily:document.getElementById("qDaily").checked,
+    is_premium:isPremium,
+    prize: isPremium ? document.getElementById("qPrize").value : null,
+    prize_description: isPremium ? document.getElementById("qPrizeDesc").value : null,
+    questions
+  });
+  if (data.error) { show("createMsg","err",data.error); return; }
+  show("createMsg","ok","✅ Quiz created! ID: "+data.quizId);
+  document.getElementById("qTitle").value="";
+  document.getElementById("questionsList").innerHTML=""; qCount=0; addQuestion();
+  loadAll();
+}
+
+function show(id,type,msg){ const el=document.getElementById(id); el.className="msg "+type; el.textContent=msg; el.style.display="block"; }
+</script>
+</body></html>

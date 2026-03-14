@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <meta property="og:image" content="/favicon.svg">  <meta property="og:title" content="CyberBuddy - Create Account">
+  <meta property="og:description" content="Join CyberBuddy and start learning cybersecurity">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cyberbuddy.rw">
+  <meta property="og:image" content="https://cyberbuddy.rw/favicon.svg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CyberBuddy - Create Account">
+  <meta name="twitter:description" content="Join CyberBuddy and start learning cybersecurity">
+  <meta name="description" content="Join CyberBuddy and start learning cybersecurity">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberBuddy - Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050a0f;--cyan:#00f5ff;--green:#00ff88;--text:#c8e6f0;--text-dim:#4a7a8a;--border:#1a3a4a;--red:#ff3860;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;background-image:linear-gradient(rgba(0,245,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.02) 1px,transparent 1px);background-size:40px 40px;}
+.card{width:100%;max-width:420px;padding:40px 36px;background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:16px;}
+.logo{font-family:"Orbitron",monospace;font-size:28px;font-weight:900;letter-spacing:3px;background:linear-gradient(90deg,#00f5ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;filter:drop-shadow(0 0 12px rgba(0,245,255,0.3));}
+.subtitle{text-align:center;font-family:"Share Tech Mono",monospace;color:var(--text-dim);font-size:11px;letter-spacing:2px;margin:6px 0 32px;}
+.field{margin-bottom:18px;}
+label{display:block;font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:2px;color:var(--cyan);margin-bottom:7px;}
+input{width:100%;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:"Share Tech Mono",monospace;font-size:13px;outline:none;transition:border-color 0.2s;}
+input:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,245,255,0.08);}
+input::placeholder{color:var(--text-dim);}
+.btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--cyan),var(--green));border:none;border-radius:8px;color:#050a0f;font-family:"Orbitron",monospace;font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:6px;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(0,245,255,0.3);}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.error{background:rgba(255,56,96,0.1);border:1px solid rgba(255,56,96,0.3);border-radius:6px;padding:10px 14px;font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--red);margin-bottom:16px;display:none;}
+.link{text-align:center;margin-top:20px;font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--text-dim);}
+.link a{color:var(--cyan);text-decoration:none;}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">CYBERBUDDY</div>
+  <div class="subtitle">// CREATE ACCOUNT //</div>
+  <div class="error" id="errorMsg"></div>
+  <div class="field"><label>USERNAME</label><input type="text" id="username" placeholder="CyberStudent01"/></div>
+  <div class="field"><label>EMAIL</label><input type="email" id="email" placeholder="student@school.com"/></div>
+  <div class="field"><label>PASSWORD</label><input type="password" id="password" placeholder="Min 6 characters"/></div>
+  <div class="field">
+    <label style="display:flex;justify-content:space-between;align-items:center;">
+      REFERRAL CODE
+      <span style="font-size:10px;color:var(--dim);font-weight:normal;letter-spacing:0">optional — get +10 bonus points</span>
+    </label>
+    <input type="text" id="referral" placeholder="Enter a friend's code e.g. AB12CD" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
+  </div>
+  <button class="btn" id="regBtn" onclick="register()">CREATE ACCOUNT</button>
+  <hr>
+  <div class="link">Already registered? <a href="/login">Login here</a></div>
+</div>
+<script>
+async function register(){
+  const username=document.getElementById("username").value.trim();
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+  const btn=document.getElementById("regBtn");
+  document.getElementById("errorMsg").style.display="none";
+  if(!username||!email||!password){showError("Please fill in all fields.");return;}
+  btn.disabled=true;btn.textContent="CREATING...";
+  try{
+    const res=await fetch("/api/auth/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username,email,password,referral:document.getElementById("referral").value.trim()||null})});
+    const data=await res.json();
+    if(data.error){showError(data.error);btn.disabled=false;btn.textContent="CREATE ACCOUNT";return;}
+    window.location.href="/chat";
+  }catch(e){showError("Connection error. Is the server running?");btn.disabled=false;btn.textContent="CREATE ACCOUNT";}
+}
+function showError(msg){const e=document.getElementById("errorMsg");e.textContent=msg;e.style.display="block";}
+</script>
+<div style="text-align:center;padding:16px;font-family:Share Tech Mono,monospace;font-size:10px;color:#2a4a5a;"><a href="/terms" style="color:#2a4a5a;text-decoration:none;margin-right:12px">Terms of Service</a><a href="/privacy" style="color:#2a4a5a;text-decoration:none;">Privacy Policy</a></div>
+</body></html>

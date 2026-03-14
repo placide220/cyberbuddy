@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <meta property="og:image" content="/favicon.svg">  <meta property="og:title" content="CyberBuddy - Security Scanner">
+  <meta property="og:description" content="Scan any website for security vulnerabilities">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cyberbuddy.rw">
+  <meta property="og:image" content="https://cyberbuddy.rw/favicon.svg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CyberBuddy - Security Scanner">
+  <meta name="twitter:description" content="Scan any website for security vulnerabilities">
+  <meta name="description" content="Scan any website for security vulnerabilities">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CyberBuddy - Security Scanner</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050a0f;--cyan:#00f5ff;--green:#00ff88;--yellow:#ffd700;--red:#ff3860;--orange:#ff8c00;--text:#c8e6f0;--dim:#4a7a8a;--border:#1a3a4a;--navy:#0a1520;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-height:100vh;padding:20px;background-image:linear-gradient(rgba(0,245,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.015) 1px,transparent 1px);background-size:40px 40px;}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:12px;margin-bottom:24px;flex-wrap:wrap;gap:8px;}
+.logo{font-family:"Orbitron",monospace;font-size:16px;font-weight:900;background:linear-gradient(90deg,#00f5ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links a{color:var(--dim);text-decoration:none;font-family:"Share Tech Mono",monospace;font-size:12px;margin-left:14px;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--cyan);}
+.container{max-width:860px;margin:0 auto;}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:28px;}
+.hero-title{font-family:"Orbitron",monospace;font-size:26px;font-weight:900;background:linear-gradient(90deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.hero-sub{color:var(--dim);font-family:"Share Tech Mono",monospace;font-size:12px;letter-spacing:1px;}
+
+/* SCAN INPUT */
+.scan-box{background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px;}
+.input-row{display:flex;gap:12px;margin-bottom:12px;}
+.url-input{flex:1;background:rgba(0,0,0,0.5);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:"Share Tech Mono",monospace;font-size:14px;outline:none;transition:border-color 0.2s;}
+.url-input:focus{border-color:var(--cyan);}
+.url-input::placeholder{color:var(--dim);}
+.scan-btn{padding:14px 28px;background:linear-gradient(135deg,var(--cyan),var(--green));border:none;border-radius:10px;font-family:"Orbitron",monospace;font-size:12px;font-weight:700;letter-spacing:2px;color:#050a0f;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.scan-btn:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(0,245,255,0.3);}
+.scan-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.examples{display:flex;gap:8px;flex-wrap:wrap;}
+.example-btn{background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.15);border-radius:6px;padding:5px 12px;color:var(--dim);font-family:"Share Tech Mono",monospace;font-size:11px;cursor:pointer;transition:all 0.2s;}
+.example-btn:hover{color:var(--cyan);border-color:var(--cyan);}
+
+/* SCANNING ANIMATION */
+.scanning-card{background:rgba(10,21,32,0.95);border:1px solid var(--cyan);border-radius:14px;padding:36px;text-align:center;display:none;margin-bottom:20px;}
+.scan-anim{font-size:48px;animation:spin 2s linear infinite;display:inline-block;}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.scan-status{font-family:"Orbitron",monospace;font-size:14px;color:var(--cyan);margin:14px 0 8px;letter-spacing:2px;}
+.scan-detail{font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--dim);}
+.progress-bar{height:3px;background:rgba(0,245,255,0.1);border-radius:2px;margin:16px 0 0;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:2px;animation:progress 4s ease-in-out infinite;}
+@keyframes progress{0%{width:5%}80%{width:90%}100%{width:90%}}
+
+/* RESULTS */
+.results{display:none;}
+
+/* SCORE CARD */
+.score-card{background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px;display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;}
+@media(max-width:600px){.score-card{grid-template-columns:1fr;text-align:center;}}
+.score-circle{width:100px;height:100px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid;}
+.score-circle.green{border-color:var(--green);background:rgba(0,255,136,0.08);}
+.score-circle.cyan{border-color:var(--cyan);background:rgba(0,245,255,0.08);}
+.score-circle.yellow{border-color:var(--yellow);background:rgba(255,215,0,0.08);}
+.score-circle.orange{border-color:var(--orange);background:rgba(255,140,0,0.08);}
+.score-circle.red{border-color:var(--red);background:rgba(255,56,96,0.08);}
+.score-num{font-family:"Orbitron",monospace;font-size:28px;font-weight:900;}
+.score-circle.green .score-num,.score-circle.green .grade-lbl{color:var(--green);}
+.score-circle.cyan .score-num,.score-circle.cyan .grade-lbl{color:var(--cyan);}
+.score-circle.yellow .score-num,.score-circle.yellow .grade-lbl{color:var(--yellow);}
+.score-circle.orange .score-num,.score-circle.orange .grade-lbl{color:var(--orange);}
+.score-circle.red .score-num,.score-circle.red .grade-lbl{color:var(--red);}
+.grade-lbl{font-family:"Orbitron",monospace;font-size:11px;font-weight:700;letter-spacing:1px;}
+.score-info{}
+.score-url{font-family:"Share Tech Mono",monospace;font-size:13px;color:var(--cyan);margin-bottom:6px;}
+.score-summary{font-size:14px;color:var(--text);margin-bottom:8px;}
+.score-meta{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--dim);}
+.limited-badge{display:inline-block;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);border-radius:6px;padding:4px 12px;font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--yellow);margin-top:8px;}
+
+/* SECTION */
+.section{background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px;}
+.section-title{font-family:"Orbitron",monospace;font-size:12px;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.section-title.ssl{color:var(--cyan);}
+.section-title.headers{color:var(--yellow);}
+.section-title.dns{color:var(--green);}
+.section-title.issues{color:var(--red);}
+.section-title.passes{color:var(--green);}
+
+/* SSL DETAILS */
+.ssl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
+.ssl-item{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:12px;}
+.ssl-label{font-family:"Share Tech Mono",monospace;font-size:9px;letter-spacing:2px;color:var(--dim);margin-bottom:4px;}
+.ssl-value{font-size:13px;color:var(--text);font-weight:600;}
+
+/* HEADER ROWS */
+.header-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(26,58,74,0.4);}
+.header-row:last-child{border-bottom:none;}
+.header-status{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:1px;}
+.header-status.ok{background:rgba(0,255,136,0.15);color:var(--green);}
+.header-status.fail{background:rgba(255,56,96,0.15);color:var(--red);}
+.header-name{font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--text);margin-bottom:2px;}
+.header-desc{font-size:12px;color:var(--dim);}
+.header-value{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--dim);margin-top:3px;word-break:break-all;}
+
+/* ISSUES */
+.issue{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:8px;}
+.issue.critical{background:rgba(255,56,96,0.08);border:1px solid rgba(255,56,96,0.2);}
+.issue.warning{background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);}
+.issue.info{background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.1);}
+.issue-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.issue-text{font-size:13px;}
+.issue.critical .issue-text{color:#ff8099;}
+.issue.warning  .issue-text{color:var(--yellow);}
+.issue.info     .issue-text{color:var(--dimlt,#7aaabb);}
+.sev-badge{font-family:"Share Tech Mono",monospace;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:4px;margin-right:8px;vertical-align:middle;}
+.sev-badge.critical{background:rgba(255,56,96,0.2);color:#ff8099;}
+.sev-badge.warning{background:rgba(255,215,0,0.15);color:var(--yellow);}
+.sev-badge.info{background:rgba(0,245,255,0.1);color:var(--cyan);}
+
+/* PASSES */
+.pass{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(26,58,74,0.3);font-size:13px;color:var(--green);}
+.pass:last-child{border-bottom:none;}
+
+/* DNS */
+.dns-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(26,58,74,0.4);gap:10px;}
+.dns-row:last-child{border-bottom:none;}
+.dns-check{font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--text);min-width:140px;}
+.dns-status{font-size:11px;padding:2px 8px;border-radius:4px;font-family:"Share Tech Mono",monospace;white-space:nowrap;}
+.dns-status.ok{background:rgba(0,255,136,0.1);color:var(--green);}
+.dns-status.warn{background:rgba(255,215,0,0.1);color:var(--yellow);}
+.dns-status.fail{background:rgba(255,56,96,0.1);color:var(--red);}
+.dns-note{font-size:12px;color:var(--dim);text-align:right;flex:1;}
+
+/* HISTORY */
+.history-table{width:100%;border-collapse:collapse;}
+.history-table th{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:2px;color:var(--dim);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.history-table td{padding:10px;font-size:13px;border-bottom:1px solid rgba(26,58,74,0.3);}
+.history-table tr:last-child td{border-bottom:none;}
+.history-table tr:hover td{background:rgba(0,245,255,0.02);}
+.grade-chip{font-family:"Orbitron",monospace;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;}
+.grade-chip.green{color:var(--green);background:rgba(0,255,136,0.1);}
+.grade-chip.cyan{color:var(--cyan);background:rgba(0,245,255,0.1);}
+.grade-chip.yellow{color:var(--yellow);background:rgba(255,215,0,0.1);}
+.grade-chip.red{color:var(--red);background:rgba(255,56,96,0.1);}
+.rescan-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--dim);font-family:"Share Tech Mono",monospace;font-size:11px;cursor:pointer;}
+.rescan-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* UPGRADE BOX */
+.upgrade-box{background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.25);border-radius:10px;padding:16px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+.upgrade-text{font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--yellow);}
+.upgrade-btn{background:linear-gradient(135deg,var(--yellow),var(--orange));border:none;border-radius:8px;padding:8px 18px;font-family:"Orbitron",monospace;font-size:11px;font-weight:700;color:#050a0f;cursor:pointer;text-decoration:none;white-space:nowrap;}
+
+/* ERROR */
+.error-card{background:rgba(255,56,96,0.08);border:1px solid rgba(255,56,96,0.3);border-radius:12px;padding:20px;text-align:center;display:none;margin-bottom:16px;}
+.error-icon{font-size:32px;margin-bottom:10px;}
+.error-msg{font-family:"Share Tech Mono",monospace;font-size:13px;color:#ff8099;}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="logo">CYBERBUDDY</div>
+  <div class="nav-links">
+    <a href="/chat">💬 Chat</a>
+    <a href="/quiz">🎯 Quiz</a>
+    <a href="/scan">📸 Image Scan</a>
+    <a href="/scanner" class="active">🔍 Web Scanner</a>
+    <a href="/profile">👤 Profile</a>
+    <a href="/pricing">⭐ Premium</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-title">🔍 WEBSITE SECURITY SCANNER</div>
+    <div class="hero-sub">// SCAN ANY WEBSITE FOR SECURITY VULNERABILITIES — FREE & LEGAL //</div>
+  </div>
+
+  <!-- INPUT BOX -->
+  <div class="scan-box">
+    <div class="input-row">
+      <input type="text" class="url-input" id="urlInput" placeholder="Enter website URL — e.g. example.com or https://mysite.com" onkeydown="if(event.key==='Enter')startScan()"/>
+      <button class="scan-btn" id="scanBtn" onclick="startScan()">SCAN NOW</button>
+    </div>
+    <div class="examples">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);margin-right:4px">Try:</span>
+      <button class="example-btn" onclick="setUrl('google.com')">google.com</button>
+      <button class="example-btn" onclick="setUrl('github.com')">github.com</button>
+      <button class="example-btn" onclick="setUrl('http://example.com')">http://example.com</button>
+      <button class="example-btn" onclick="setUrl('wikipedia.org')">wikipedia.org</button>
+    </div>
+  </div>
+
+  <!-- SCANNING ANIMATION -->
+  <div class="scanning-card" id="scanningCard">
+    <div class="scan-anim">🔍</div>
+    <div class="scan-status" id="scanStatus">INITIALIZING SCAN...</div>
+    <div class="scan-detail" id="scanDetail">Connecting to target...</div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-card" id="errorCard">
+    <div class="error-icon">⚠️</div>
+    <div class="error-msg" id="errorMsg">Scan failed.</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+
+    <!-- Upgrade notice for free users -->
+    <div id="upgradeBox" class="upgrade-box" style="display:none">
+      <div class="upgrade-text">⚠️ Free plan shows 3 issues max. Upgrade for the full security report with all checks, recommendations & history.</div>
+      <a href="/pricing" class="upgrade-btn">UPGRADE $2/MO →</a>
+    </div>
+
+    <!-- Score card -->
+    <div class="score-card">
+      <div class="score-circle" id="scoreCircle">
+        <div class="score-num" id="scoreNum">-</div>
+        <div class="grade-lbl" id="gradeLabel">-</div>
+      </div>
+      <div class="score-info">
+        <div class="score-url" id="scoreUrl"></div>
+        <div class="score-summary" id="scoreSummary"></div>
+        <div class="score-meta" id="scoreMeta"></div>
+      </div>
+      <button class="scan-btn" onclick="startScan()" style="padding:10px 18px;font-size:11px">RESCAN</button>
+    </div>
+
+    <!-- SSL -->
+    <div class="section" id="sslSection">
+      <div class="section-title ssl">🔒 SSL / TLS CERTIFICATE</div>
+      <div class="ssl-grid" id="sslGrid"></div>
+    </div>
+
+    <!-- Security Headers -->
+    <div class="section">
+      <div class="section-title headers">🛡️ SECURITY HEADERS</div>
+      <div id="headersContent"></div>
+    </div>
+
+    <!-- DNS -->
+    <div class="section">
+      <div class="section-title dns">🌐 DNS & EMAIL SECURITY</div>
+      <div id="dnsContent"></div>
+    </div>
+
+    <!-- Issues -->
+    <div class="section" id="issuesSection">
+      <div class="section-title issues">⚠️ ISSUES FOUND (<span id="issueCount">0</span>)</div>
+      <div id="issuesContent"></div>
+    </div>
+
+    <!-- Passes -->
+    <div class="section" id="passesSection">
+      <div class="section-title passes">✅ PASSING CHECKS (<span id="passCount">0</span>)</div>
+      <div id="passesContent"></div>
+    </div>
+
+    <div style="text-align:center;margin:16px 0;">
+      <button class="scan-btn" onclick="scrollToTop()" style="background:rgba(0,245,255,0.1);color:var(--cyan);border:1px solid rgba(0,245,255,0.3);">SCAN ANOTHER URL</button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="section" id="historySection" style="margin-top:20px;display:none;">
+    <div class="section-title" style="color:var(--dim)">📋 RECENT SCANS</div>
+    <div style="overflow-x:auto;">
+      <table class="history-table">
+        <thead><tr><th>WEBSITE</th><th>SCORE</th><th>GRADE</th><th>ISSUES</th><th>DATE</th><th></th></tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUrl = "";
+
+async function init() {
+  const me = await fetch("/api/auth/me").then(r=>r.json());
+  if (!me.loggedIn) { window.location.href="/login"; return; }
+
+  // Check premium status
+  const status = await fetch("/api/premium/status").then(r=>r.json());
+  if (!status.isPremium) {
+    // Show lock overlay
+    document.querySelector(".container").innerHTML = `
+      <div style="text-align:center;padding:60px 20px;background:rgba(10,21,32,0.95);border:1px solid #1a3a4a;border-radius:16px;max-width:500px;margin:0 auto;">
+        <div style="font-size:60px;margin-bottom:20px">🔒</div>
+        <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ffd700;margin-bottom:10px">PREMIUM FEATURE</div>
+        <div style="font-family:Share Tech Mono,monospace;font-size:12px;color:#4a7a8a;margin-bottom:24px;line-height:1.8">
+          The Website Security Scanner checks SSL certificates,<br>
+          security headers, DNS records and more.<br><br>
+          Upgrade to Premium to access this feature.
+        </div>
+        <div style="background:rgba(0,0,0,0.3);border:1px solid #1a3a4a;border-radius:10px;padding:16px;margin-bottom:24px;font-family:Share Tech Mono,monospace;font-size:12px;color:#7aaabb;">
+          ✅ SSL & TLS certificate analysis<br>
+          ✅ Security headers check (6 headers)<br>
+          ✅ DNS & email security (SPF, DMARC)<br>
+          ✅ Security score & grade (A+ to F)<br>
+          ✅ Full scan history
+        </div>
+        <a href="/pricing" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#00f5ff,#00ff88);color:#050a0f;font-family:Orbitron,monospace;font-size:12px;font-weight:700;letter-spacing:2px;border-radius:10px;text-decoration:none;">
+          UPGRADE FOR $2/MONTH →
+        </a>
+        <div style="margin-top:16px;font-family:Share Tech Mono,monospace;font-size:11px;color:#2a4a5a">
+          <a href="/chat" style="color:#4a7a8a;text-decoration:none">← Back to Chat</a>
+        </div>
+      </div>`;
+    return;
+  }
+
+  loadHistory();
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("url")) { document.getElementById("urlInput").value = params.get("url"); startScan(); }
+}
+
+function setUrl(url) {
+  document.getElementById("urlInput").value = url;
+  document.getElementById("urlInput").focus();
+}
+
+function scrollToTop() {
+  document.getElementById("urlInput").focus();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+const scanSteps = [
+  ["CHECKING SSL CERTIFICATE...", "Verifying encryption and certificate validity"],
+  ["ANALYZING SECURITY HEADERS...", "Checking HTTP response headers"],
+  ["RUNNING DNS CHECKS...", "Verifying DNS records and email security"],
+  ["CHECKING HTTPS REDIRECT...", "Testing HTTP to HTTPS redirection"],
+  ["COMPILING RESULTS...", "Calculating security score"],
+];
+let stepIndex = 0, stepInterval = null;
+
+function startStepAnimation() {
+  stepIndex = 0;
+  clearInterval(stepInterval);
+  updateStep();
+  stepInterval = setInterval(() => {
+    stepIndex = (stepIndex + 1) % scanSteps.length;
+    updateStep();
+  }, 1200);
+}
+
+function updateStep() {
+  document.getElementById("scanStatus").textContent = scanSteps[stepIndex][0];
+  document.getElementById("scanDetail").textContent = scanSteps[stepIndex][1];
+}
+
+async function startScan() {
+  const url = document.getElementById("urlInput").value.trim();
+  if (!url) { document.getElementById("urlInput").focus(); return; }
+  currentUrl = url;
+
+  // Reset UI
+  document.getElementById("results").style.display = "none";
+  document.getElementById("errorCard").style.display = "none";
+  document.getElementById("scanningCard").style.display = "block";
+  document.getElementById("scanBtn").disabled = true;
+  startStepAnimation();
+
+  try {
+    const data = await fetch("/api/scanner/scan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url })
+    }).then(r=>r.json());
+
+    clearInterval(stepInterval);
+    document.getElementById("scanningCard").style.display = "none";
+    document.getElementById("scanBtn").disabled = false;
+
+    if (data.error) {
+      if (data.requiresPremium) {
+        window.location.href = "/pricing";
+        return;
+      }
+      document.getElementById("errorMsg").textContent = data.error;
+      document.getElementById("errorCard").style.display = "block";
+      return;
+    }
+
+    renderResults(data);
+    loadHistory();
+  } catch(e) {
+    clearInterval(stepInterval);
+    document.getElementById("scanningCard").style.display = "none";
+    document.getElementById("scanBtn").disabled = false;
+    document.getElementById("errorMsg").textContent = "Connection error. Is the server running?";
+    document.getElementById("errorCard").style.display = "block";
+  }
+}
+
+function renderResults(d) {
+  // Score circle
+  const circle = document.getElementById("scoreCircle");
+  circle.className = "score-circle " + d.color;
+  document.getElementById("scoreNum").textContent = d.score;
+  document.getElementById("gradeLabel").textContent = "Grade " + d.grade;
+  document.getElementById("scoreUrl").textContent = "🌐 " + d.hostname;
+  document.getElementById("scoreSummary").textContent = d.summary;
+  document.getElementById("scoreMeta").textContent = "Scanned: " + new Date(d.scannedAt).toLocaleString();
+
+  // Upgrade box
+  document.getElementById("upgradeBox").style.display = d.limited ? "flex" : "none";
+
+  // SSL
+  const ssl = d.ssl;
+  const sslGrid = document.getElementById("sslGrid");
+  if (ssl.hasSSL) {
+    sslGrid.innerHTML = `
+      <div class="ssl-item"><div class="ssl-label">STATUS</div><div class="ssl-value" style="color:${ssl.expired?'var(--red)':ssl.expiringSoon?'var(--yellow)':'var(--green)'}">${ssl.expired?'❌ EXPIRED':ssl.expiringSoon?'⚠️ EXPIRING SOON':'✅ VALID'}</div></div>
+      <div class="ssl-item"><div class="ssl-label">PROTOCOL</div><div class="ssl-value" style="color:${ssl.protocol==='TLSv1.3'?'var(--green)':'var(--yellow)'}">${ssl.protocol||'Unknown'}</div></div>
+      <div class="ssl-item"><div class="ssl-label">EXPIRES</div><div class="ssl-value">${ssl.expires||'Unknown'}</div></div>
+      <div class="ssl-item"><div class="ssl-label">DAYS LEFT</div><div class="ssl-value" style="color:${(ssl.daysLeft||0)<30?'var(--red)':'var(--green)'}">${ssl.daysLeft !== null ? ssl.daysLeft+' days' : 'Unknown'}</div></div>
+      <div class="ssl-item"><div class="ssl-label">ISSUED BY</div><div class="ssl-value" style="font-size:12px">${ssl.issuer||'Unknown'}</div></div>
+      <div class="ssl-item"><div class="ssl-label">HTTPS REDIRECT</div><div class="ssl-value" style="color:${d.redirect?.redirectsToHTTPS?'var(--green)':'var(--yellow)'}">${d.redirect?.redirectsToHTTPS?'✅ Yes':'⚠️ No'}</div></div>`;
+  } else {
+    sslGrid.innerHTML = `<div style="color:var(--red);font-family:Share Tech Mono,monospace;font-size:13px">❌ No SSL/HTTPS detected — this site is NOT secure!</div>`;
+  }
+
+  // Headers
+  const headersEl = document.getElementById("headersContent");
+  if (d.headers?.results?.length) {
+    headersEl.innerHTML = d.headers.results.map(h => `
+      <div class="header-row">
+        <div class="header-status ${h.present?'ok':'fail'}">${h.present?'✓':'✗'}</div>
+        <div>
+          <div class="header-name">${h.name}</div>
+          <div class="header-desc">${h.desc}</div>
+          ${h.value ? `<div class="header-value">${h.value.substring(0,80)}${h.value.length>80?'...':''}</div>` : ''}
+        </div>
+        <div style="font-family:Share Tech Mono,monospace;font-size:11px;color:${h.present?'var(--green)':'var(--red)'};white-space:nowrap">${h.present?'✅ Present':'❌ Missing'}</div>
+      </div>`).join("") +
+      (d.headers.dangers?.map(dg => `
+      <div class="header-row" style="border-left:2px solid var(--orange);padding-left:10px;margin-top:8px">
+        <div class="header-status fail">!</div>
+        <div>
+          <div class="header-name" style="color:var(--orange)">${dg.name}</div>
+          <div class="header-desc">${dg.risk}</div>
+          <div class="header-value">${dg.value}</div>
+        </div>
+        <div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--orange)">⚠️ Exposed</div>
+      </div>`).join("") || "");
+  } else {
+    headersEl.innerHTML = `<div style="color:var(--dim);font-family:Share Tech Mono,monospace;font-size:12px">Upgrade to Premium to see all header checks.</div>`;
+  }
+
+  // DNS
+  const dnsEl = document.getElementById("dnsContent");
+  if (d.dns?.length) {
+    dnsEl.innerHTML = d.dns.map(r => `
+      <div class="dns-row">
+        <div class="dns-check">${r.check}</div>
+        <div class="dns-note">${r.note}</div>
+        <div class="dns-status ${r.status}">${r.status==='ok'?'✅':r.status==='warn'?'⚠️':'❌'} ${r.status.toUpperCase()}</div>
+      </div>`).join("");
+  } else {
+    dnsEl.innerHTML = `<div style="color:var(--dim);font-family:Share Tech Mono,monospace;font-size:12px">DNS check unavailable.</div>`;
+  }
+
+  // Issues
+  document.getElementById("issueCount").textContent = d.issues?.length || 0;
+  const issuesEl = document.getElementById("issuesContent");
+  if (d.issues?.length) {
+    const icons = { critical:"🚨", warning:"⚠️", info:"ℹ️" };
+    issuesEl.innerHTML = d.issues.map(i => `
+      <div class="issue ${i.severity}">
+        <div class="issue-icon">${icons[i.severity]||'•'}</div>
+        <div class="issue-text"><span class="sev-badge ${i.severity}">${i.severity.toUpperCase()}</span>${i.msg}</div>
+      </div>`).join("");
+  } else {
+    issuesEl.innerHTML = `<div style="color:var(--green);font-family:Share Tech Mono,monospace;font-size:13px">🎉 No issues found!</div>`;
+  }
+
+  // Passes
+  document.getElementById("passCount").textContent = d.passes?.length || 0;
+  const passesEl = document.getElementById("passesContent");
+  if (d.passes?.length) {
+    passesEl.innerHTML = d.passes.map(p => `<div class="pass">✅ ${p}</div>`).join("");
+  } else {
+    passesEl.innerHTML = `<div style="color:var(--dim);font-family:Share Tech Mono,monospace;font-size:12px">No passing checks.</div>`;
+  }
+
+  document.getElementById("results").style.display = "block";
+  document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function loadHistory() {
+  const data = await fetch("/api/scanner/history").then(r=>r.json());
+  const section = document.getElementById("historySection");
+  const body = document.getElementById("historyBody");
+  if (!data.scans?.length) { section.style.display = "none"; return; }
+  section.style.display = "block";
+  const gradeColor = g => g==="A+"||g==="A"?"green":g==="B"?"cyan":g==="C"?"yellow":"red";
+  body.innerHTML = data.scans.map(s => `<tr>
+    <td style="font-family:Share Tech Mono,monospace;color:var(--cyan)">${s.url}</td>
+    <td style="font-family:Orbitron,monospace;color:var(--text)">${s.score}/100</td>
+    <td><span class="grade-chip ${gradeColor(s.grade)}">${s.grade}</span></td>
+    <td style="color:${s.issues_count>0?'var(--yellow)':'var(--green)'}">${s.issues_count} issue${s.issues_count!==1?'s':''}</td>
+    <td style="color:var(--dim);font-size:12px">${new Date(s.created_at).toLocaleDateString()}</td>
+    <td><button class="rescan-btn" onclick="document.getElementById('urlInput').value='${s.url}';startScan()">RESCAN</button></td>
+  </tr>`).join("");
+}
+
+init();
+</script>
+</body>
+</html>

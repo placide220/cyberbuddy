@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <meta property="og:image" content="/favicon.svg">  <meta property="og:title" content="CyberBuddy - Leaderboard">
+  <meta property="og:description" content="Top cybersecurity students in Africa">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cyberbuddy.rw">
+  <meta property="og:image" content="https://cyberbuddy.rw/favicon.svg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CyberBuddy - Leaderboard">
+  <meta name="twitter:description" content="Top cybersecurity students in Africa">
+  <meta name="description" content="Top cybersecurity students in Africa">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CyberBuddy - Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050a0f;--cyan:#00f5ff;--green:#00ff88;--yellow:#ffd700;--text:#c8e6f0;--dim:#4a7a8a;--border:#1a3a4a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-height:100vh;padding:20px;background-image:linear-gradient(rgba(0,245,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.015) 1px,transparent 1px);background-size:40px 40px;}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:12px;margin-bottom:24px;}
+.logo{font-family:"Orbitron",monospace;font-size:16px;font-weight:900;background:linear-gradient(90deg,#00f5ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links a{color:var(--dim);text-decoration:none;font-family:"Share Tech Mono",monospace;font-size:12px;margin-left:16px;}
+.nav-links a:hover{color:var(--cyan);}
+.page-title{font-family:"Orbitron",monospace;font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.page-sub{color:var(--dim);font-family:"Share Tech Mono",monospace;font-size:12px;margin-bottom:24px;}
+.board{background:rgba(10,21,32,0.9);border:1px solid var(--border);border-radius:14px;overflow:hidden;max-width:600px;margin:0 auto;}
+.board-header{padding:16px 20px;border-bottom:1px solid var(--border);font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:2px;color:var(--dim);display:grid;grid-template-columns:50px 1fr 100px;}
+.board-row{padding:16px 20px;border-bottom:1px solid rgba(26,58,74,0.5);display:grid;grid-template-columns:50px 1fr 100px;align-items:center;transition:background 0.2s;}
+.board-row:hover{background:rgba(0,245,255,0.03);}
+.board-row:last-child{border-bottom:none;}
+.rank{font-family:"Orbitron",monospace;font-size:16px;font-weight:900;text-align:center;}
+.rank-1{color:var(--yellow);}
+.rank-2{color:#C0C0C0;}
+.rank-3{color:#CD7F32;}
+.rank-other{color:var(--dim);}
+.user-name{font-family:"Share Tech Mono",monospace;font-size:13px;color:var(--text);}
+.user-pts{font-family:"Orbitron",monospace;font-size:14px;font-weight:700;color:var(--cyan);text-align:right;}
+.top3{background:rgba(255,215,0,0.03);border-left:3px solid var(--yellow);}
+.crown{font-size:20px;display:block;text-align:center;}
+.my-rank{background:rgba(0,245,255,0.06);border-left:3px solid var(--cyan);}
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="logo">CYBERBUDDY</div>
+  <div class="nav-links">
+    <a href="/chat">💬 Chat</a>
+    <a href="/quiz">🎯 Quiz</a>
+    <a href="/leaderboard">🏆 Leaderboard</a>
+    <a href="/profile">👤 Profile</a>
+  </div>
+</div>
+<div style="text-align:center;margin-bottom:24px;">
+  <div class="page-title">🏆 LEADERBOARD</div>
+  <div class="page-sub">// TOP CYBERSECURITY STUDENTS //</div>
+</div>
+<div class="board">
+  <div class="board-header"><span>RANK</span><span>PLAYER</span><span style="text-align:right">POINTS</span></div>
+  <div id="boardRows">Loading...</div>
+</div>
+<script>
+async function load() {
+  const me = await fetch("/api/auth/me").then(r=>r.json());
+  const data = await fetch("/api/leaderboard").then(r=>r.json());
+  const container = document.getElementById("boardRows");
+  if (!data.leaders?.length) { container.innerHTML="<div style='padding:20px;text-align:center;color:var(--dim);font-family:Share Tech Mono,monospace'>No players yet. Take a quiz to appear here!</div>"; return; }
+  const medals = ["👑","🥈","🥉"];
+  container.innerHTML = data.leaders.map((l,i) => `
+    <div class="board-row ${i<3?"top3":""} ${l.username===me.username?"my-rank":""}">
+      <div class="rank rank-${i<3?i+1:"other"}">${i<3?medals[i]:l.rank}</div>
+      <div class="user-name">${l.username}${l.username===me.username?" (you)":""}</div>
+      <div class="user-pts">${l.points}</div>
+    </div>`).join("");
+}
+load();
+</script>
+</body></html>
