@@ -11,10 +11,12 @@ const multer       = require("multer");
 const axios        = require("axios");
 const validator    = require("validator");
 const { query, pool, init } = require("./db");
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const scanner = require("./scanner");
 const dpo     = require("./payment");
 const logger       = require("./logger");
-const email        = require("./email");
+const email_service = require("./email");
 
 const app    = express();
 const makeId = () => crypto.randomBytes(16).toString("hex");
@@ -46,6 +48,74 @@ const chatLimiter = rateLimit({
   message: { error: "Sending messages too fast. Please slow down." },
 });
 app.use(globalLimiter);
+
+// ── GOOGLE OAUTH SETUP ───────────────────────────────────────────
+if (process.env.GOOGLE_CLIENT_ID && !process.env.GOOGLE_CLIENT_ID.startsWith("your_")) {
+  passport.use(new GoogleStrategy({
+    clientID:     process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL:  (process.env.APP_URL || "http://localhost:3000") + "/auth/google/callback",
+    scope: ["profile", "email"]
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      const email    = profile.emails?.[0]?.value;
+      const name     = profile.displayName || profile.emails?.[0]?.value?.split("@")[0];
+      const googleId = profile.id;
+      if (!email) return done(null, false);
+      // Check if user exists
+      let r = await query("SELECT * FROM users WHERE email=$1 OR google_id=$1", [email]);
+      let user = r.rows[0];
+      if (!user) {
+        // Create new user
+        const id = makeId();
+        const ref_code = Math.random().toString(36).substring(2,8).toUpperCase();
+        await query(
+          "INSERT INTO users(id,username,email,password,google_id,referral_code) VALUES($1,$2,$3,$4,$5,$6)",
+          [id, name, email, "google_oauth_" + googleId, googleId, ref_code]
+        );
+        user = (await query("SELECT * FROM users WHERE id=$1", [id])).rows[0];
+        // Send welcome email
+        email_service.sendWelcome(email, name).catch(()=>{});
+      } else if (!user.google_id) {
+        // Link Google to existing account
+        await query("UPDATE users SET google_id=$1 WHERE id=$2", [googleId, user.id]);
+      }
+      return done(null, user);
+    } catch(e) { return done(e); }
+  }));
+
+  passport.serializeUser((user, done) => done(null, user.id));
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const r = await query("SELECT * FROM users WHERE id=$1", [id]);
+      done(null, r.rows[0] || false);
+    } catch(e) { done(e); }
+  });
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Google OAuth routes
+  app.get("/auth/google",
+    passport.authenticate("google", { scope: ["profile","email"] })
+  );
+
+  app.get("/auth/google/callback",
+    passport.authenticate("google", { failureRedirect: "/login?error=google" }),
+    (req, res) => {
+      req.session.userId   = req.user.id;
+      req.session.username = req.user.username;
+      logger.info("Google login", { username: req.user.username });
+      res.redirect("/chat");
+    }
+  );
+} else {
+  // Google not configured — show helpful error
+  app.get("/auth/google", (req, res) => {
+    res.redirect("/login?error=google_not_configured");
+  });
+}
+
 
 // Sessions — stored in PostgreSQL (survive restarts!)
 app.use(session({
@@ -137,7 +207,7 @@ app.post("/api/auth/register", authLimiter, async (req, res) => {
     req.session.userId = id; req.session.username = username;
     logger.info("New user registered", { username, email: emailInput, ip: getIp(req) });
     // Send welcome email (non-blocking)
-    email.sendWelcome(emailInput, username).catch(()=>{});
+    email_service.sendWelcome(emailInput, username).catch(()=>{});
     res.json({ success: true, username });
   } catch(e) {
     logger.error("Register error", { error: e.message });
@@ -158,7 +228,7 @@ app.post("/api/auth/login", authLimiter, async (req, res) => {
     req.session.userId = id; req.session.username = username;
     logger.info("User logged in", { username, ip: getIp(req) });
     // Login alert email (non-blocking)
-    email.sendLoginAlert(emailInput, username, getIp(req)).catch(()=>{});
+    email_service.sendLoginAlert(emailInput, username, getIp(req)).catch(()=>{});
     res.json({ success: true, username });
   } catch(e) {
     logger.error("Login error", { error: e.message });
@@ -203,7 +273,7 @@ app.post("/api/auth/forgot-password", authLimiter, async (req, res) => {
     await query("INSERT INTO password_resets(id,user_id,token,expires_at) VALUES($1,$2,$3,$4)", [makeId(),id,token,expires]);
     const resetLink = `${process.env.APP_URL}/reset-password?token=${token}`;
     // Try email but also return the link directly in dev/HTTP mode
-    const emailSent = await email.sendPasswordReset(emailInput, username, resetLink).catch(()=>false);
+    const emailSent = await email_service.sendPasswordReset(emailInput, username, resetLink).catch(()=>false);
     logger.info("Password reset requested", { email: emailInput, emailSent });
     // If email fails, return the link directly so user can still reset
     if (!emailSent) {
@@ -321,7 +391,7 @@ app.post("/api/payment/initiate", requireAuth, async (req, res) => {
         await query("UPDATE users SET points=points+10 WHERE id=$1", [req.session.userId]);
         await query("UPDATE referrals SET bonus_points=0 WHERE referred_id=$1", [req.session.userId]);
       }
-      await email.sendPaymentReceipt(user.email, user.username, { amount: PREMIUM_PRICE*months, months, tx_ref:"DEMO-"+makeId().substring(0,8), expires });
+      await email_service.sendPaymentReceipt(user.email, user.username, { amount: PREMIUM_PRICE*months, months, tx_ref:"DEMO-"+makeId().substring(0,8), expires });
       logger.info("Demo premium activated", { userId: req.session.userId, months });
       return res.json({ success: true, demo: true, message: `Demo mode: Premium activated for ${months} month(s)! Receipt sent to ${user.email}` });
     }
@@ -372,7 +442,7 @@ app.get("/api/payment/verify", async (req, res) => {
             logger.info("Referral bonus awarded after payment", { referrer: user.referred_by, referred: user_id });
           }
         }
-        await email.sendPaymentReceipt(user.email, user.username, { amount: data.amount, months, tx_ref, expires });
+        await email_service.sendPaymentReceipt(user.email, user.username, { amount: data.amount, months, tx_ref, expires });
         logger.info("Payment completed", { user_id, tx_ref, amount: data.amount });
       }
       res.redirect("/chat?payment=success");
@@ -390,7 +460,7 @@ app.post("/api/payment/cancel", requireAuth, async (req, res) => {
     if (!user.is_premium) return res.json({ error: "No active subscription." });
     // Keep access until expiry, just mark as cancelled
     await query("UPDATE users SET is_premium=FALSE WHERE id=$1", [req.session.userId]);
-    await email.sendCancellation(user.email, user.username, user.premium_expires);
+    await email_service.sendCancellation(user.email, user.username, user.premium_expires);
     logger.info("Subscription cancelled", { userId: req.session.userId });
     res.json({ success: true, message: "Subscription cancelled. Access remains until "+new Date(user.premium_expires).toLocaleDateString() });
   } catch(e) { res.json({ error: e.message }); }

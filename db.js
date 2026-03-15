@@ -40,6 +40,7 @@ async function init() {
       referred_by TEXT,
       chat_count_today INTEGER DEFAULT 0,
       chat_date DATE,
+      google_id TEXT UNIQUE,
       is_admin BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMPTZ DEFAULT NOW()
     );
