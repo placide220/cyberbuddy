@@ -13,7 +13,7 @@
   <meta name="twitter:title" content="CyberBuddy - Security Scanner">
   <meta name="twitter:description" content="Scan any website for security vulnerabilities">
   <meta name="description" content="Scan any website for security vulnerabilities">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>CyberBuddy - Security Scanner</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
@@ -156,6 +156,35 @@ body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-h
 .error-card{background:rgba(255,56,96,0.08);border:1px solid rgba(255,56,96,0.3);border-radius:12px;padding:20px;text-align:center;display:none;margin-bottom:16px;}
 .error-icon{font-size:32px;margin-bottom:10px;}
 .error-msg{font-family:"Share Tech Mono",monospace;font-size:13px;color:#ff8099;}
+
+/* ── MOBILE RESPONSIVE ──────────────────────────────── */
+@media(max-width:640px){
+  body{padding:12px;}
+  .nav{padding:10px 14px;margin-bottom:16px;flex-wrap:wrap;gap:6px;}
+  .nav-links{display:flex;flex-wrap:wrap;gap:6px;}
+  .nav-links a{margin-left:0;}
+  .grid2,.stats-grid{grid-template-columns:1fr !important;}
+  .cards{grid-template-columns:1fr !important;}
+  .quiz-grid{grid-template-columns:1fr !important;}
+  .input-row{flex-direction:column;}
+  .scan-btn{width:100% !important;}
+  .url-input{font-size:16px;}
+  .score-card{grid-template-columns:1fr !important;text-align:center;}
+  .months-grid{grid-template-columns:1fr 1fr 1fr;}
+  .modal{margin:10px;max-width:calc(100vw - 20px);}
+  .tabs{flex-wrap:wrap;}
+  .tab{font-size:10px;padding:8px 10px;}
+  .board{max-width:100%;}
+  table{font-size:12px;}
+  .tbl th,.tbl td{padding:8px 6px;}
+  h1,.hero-title,.page-title{font-size:18px !important;}
+  .plan-price{font-size:30px !important;}
+}
+@media(max-width:380px){
+  .nav-links a{font-size:10px;}
+  .bubble{max-width:92%;}
+}
+
 </style>
 </head>
 <body>

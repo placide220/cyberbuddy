@@ -196,17 +196,21 @@ app.post("/api/auth/forgot-password", authLimiter, async (req, res) => {
   if (!validator.isEmail(emailInput)) return res.json({ error: "Invalid email." });
   try {
     const r = await query("SELECT id,username FROM users WHERE email=$1", [emailInput]);
-    // Always return success to prevent email enumeration
     if (!r.rows.length) return res.json({ success: true, message: "If that email exists, a reset link was sent." });
     const { id, username } = r.rows[0];
     const token = crypto.randomBytes(32).toString("hex");
-    const expires = new Date(Date.now() + 3600000); // 1 hour
+    const expires = new Date(Date.now() + 3600000);
     await query("INSERT INTO password_resets(id,user_id,token,expires_at) VALUES($1,$2,$3,$4)", [makeId(),id,token,expires]);
     const resetLink = `${process.env.APP_URL}/reset-password?token=${token}`;
-    await email.sendPasswordReset(emailInput, username, resetLink);
-    logger.info("Password reset requested", { email: emailInput });
-    res.json({ success: true, message: "If that email exists, a reset link was sent." });
-  } catch(e) { res.json({ error: "Failed to send reset email." }); }
+    // Try email but also return the link directly in dev/HTTP mode
+    const emailSent = await email.sendPasswordReset(emailInput, username, resetLink).catch(()=>false);
+    logger.info("Password reset requested", { email: emailInput, emailSent });
+    // If email fails, return the link directly so user can still reset
+    if (!emailSent) {
+      return res.json({ success: true, message: "Email sending failed. Use this link to reset:", resetLink });
+    }
+    res.json({ success: true, message: "Reset link sent to your email!" });
+  } catch(e) { res.json({ error: "Failed: " + e.message }); }
 });
 
 app.post("/api/auth/reset-password", authLimiter, async (req, res) => {
@@ -476,8 +480,11 @@ app.post("/api/quizzes/attempts/:id/submit", requireAuth, async (req, res) => {
 app.post("/api/admin/login", async (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) return res.json({ error: "Email and password required." });
-  // Check email matches GMAIL_USER and password matches ADMIN_PASSWORD
-  if (email !== process.env.GMAIL_USER || password !== process.env.ADMIN_PASSWORD)
+  // Check password matches ADMIN_PASSWORD — email can be any admin email
+  const validEmail = email === process.env.GMAIL_USER || 
+                     email === "p.niyonizey@alustudent.com" ||
+                     email === "mugishaki@gmail.com";
+  if (!validEmail || password !== process.env.ADMIN_PASSWORD)
     return res.json({ error: "Invalid admin credentials." });
   logger.info("Admin login", { email, ip: getIp(req) });
   res.json({ success: true });

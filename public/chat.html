@@ -2,355 +2,291 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="shortcut icon" href="/favicon.svg">
-  <meta property="og:image" content="/favicon.svg">  <meta property="og:title" content="CyberBuddy - AI Chat">
-  <meta property="og:description" content="Ask any cybersecurity question, 24/7">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://cyberbuddy.rw">
-  <meta property="og:image" content="https://cyberbuddy.rw/favicon.svg">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="CyberBuddy - AI Chat">
-  <meta name="twitter:description" content="Ask any cybersecurity question, 24/7">
-  <meta name="description" content="Ask any cybersecurity question, 24/7">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CyberBuddy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="description" content="Ask any cybersecurity question, 24/7">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>CyberBuddy - Chat</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#050a0f;--bg2:#0a1520;--cyan:#00f5ff;--green:#00ff88;--text:#c8e6f0;--text-dim:#4a7a8a;--border:#1a3a4a;--red:#ff3860;--sidebar:220px;}
+:root{--bg:#050a0f;--bg2:#0a1520;--cyan:#00f5ff;--green:#00ff88;--yellow:#ffd700;--red:#ff3860;--text:#c8e6f0;--dim:#4a7a8a;--border:#1a3a4a;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;height:100vh;display:flex;overflow:hidden;background-image:linear-gradient(rgba(0,245,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.015) 1px,transparent 1px);background-size:40px 40px;}
-.sidebar{width:var(--sidebar);background:rgba(10,21,32,0.98);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
-.sidebar-header{padding:18px 14px 12px;border-bottom:1px solid var(--border);}
-.logo-sm{font-family:"Orbitron",monospace;font-size:14px;font-weight:900;background:linear-gradient(90deg,#00f5ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;}
-.user-info{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--text-dim);margin-top:4px;letter-spacing:1px;}
-.new-chat-btn{margin:10px 10px 6px;padding:9px;background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(0,255,136,0.1));border:1px solid rgba(0,245,255,0.25);border-radius:8px;color:var(--cyan);font-family:"Share Tech Mono",monospace;font-size:11px;cursor:pointer;text-align:center;letter-spacing:1px;transition:all 0.2s;}
-.new-chat-btn:hover{background:linear-gradient(135deg,rgba(0,245,255,0.25),rgba(0,255,136,0.2));}
-.history-label{padding:8px 14px 4px;font-family:"Share Tech Mono",monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);}
+html,body{height:100%;height:100dvh;}
+body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;display:flex;flex-direction:column;overflow:hidden;background-image:linear-gradient(rgba(0,245,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.015) 1px,transparent 1px);background-size:40px 40px;}
+/* MOBILE NAV */
+.topbar{background:rgba(10,21,32,0.98);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-logo{font-family:"Orbitron",monospace;font-size:14px;font-weight:900;background:linear-gradient(90deg,#00f5ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.topbar-user{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--dim);}
+.menu-btn{background:none;border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--cyan);font-size:16px;cursor:pointer;line-height:1;}
+/* APP LAYOUT */
+.app{flex:1;display:flex;overflow:hidden;min-height:0;}
+/* SIDEBAR */
+.sidebar{width:220px;background:rgba(10,21,32,0.98);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform 0.3s;}
+.sidebar-header{padding:14px 13px 10px;border-bottom:1px solid var(--border);}
+.logo-sm{font-family:"Orbitron",monospace;font-size:13px;font-weight:900;background:linear-gradient(90deg,#00f5ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.user-info{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--dim);margin-top:3px;}
+.new-chat-btn{margin:8px 8px 4px;padding:8px;background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(0,255,136,0.1));border:1px solid rgba(0,245,255,0.25);border-radius:8px;color:var(--cyan);font-family:"Share Tech Mono",monospace;font-size:11px;cursor:pointer;text-align:center;transition:all 0.2s;}
+.history-label{padding:6px 13px 3px;font-family:"Share Tech Mono",monospace;font-size:9px;letter-spacing:2px;color:var(--dim);}
 .history-list{flex:1;overflow-y:auto;padding:0 6px;}
-.history-list::-webkit-scrollbar{width:3px;}
-.history-list::-webkit-scrollbar-thumb{background:var(--border);}
-.conv-item{padding:9px 10px;border-radius:7px;cursor:pointer;margin-bottom:3px;transition:background 0.15s;display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.history-list::-webkit-scrollbar{width:2px;}
+.conv-item{padding:8px 10px;border-radius:7px;cursor:pointer;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;gap:6px;transition:background 0.15s;}
 .conv-item:hover{background:rgba(0,245,255,0.06);}
 .conv-item.active{background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.15);}
 .conv-title{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
-.del-btn{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:12px;padding:2px;opacity:0;transition:opacity 0.2s;}
-.conv-item:hover .del-btn{opacity:1;}
-.del-btn:hover{color:var(--red);}
-.sidebar-footer{padding:12px 10px;border-top:1px solid var(--border);}
-.logout-btn{width:100%;padding:8px;background:none;border:1px solid var(--border);border-radius:7px;color:var(--text-dim);font-family:"Share Tech Mono",monospace;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;}
+.del-btn{background:none;border:none;color:transparent;cursor:pointer;font-size:12px;padding:2px;transition:color 0.2s;}
+.conv-item:hover .del-btn{color:var(--dim);}
+.del-btn:hover{color:var(--red) !important;}
+.sidebar-footer{padding:8px;border-top:1px solid var(--border);}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px;}
+.nav-link{display:block;padding:7px 3px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:6px;font-family:"Share Tech Mono",monospace;font-size:9px;text-align:center;text-decoration:none;color:var(--dim);transition:all 0.2s;letter-spacing:0.3px;}
+.nav-link:hover{border-color:var(--cyan);color:var(--cyan);}
+.nav-link.cyan{color:var(--cyan);border-color:rgba(0,245,255,0.2);}
+.nav-link.yellow{color:var(--yellow);border-color:rgba(255,215,0,0.2);}
+.nav-link.green{color:var(--green);border-color:rgba(0,255,136,0.2);}
+.nav-link.full{grid-column:span 2;background:linear-gradient(135deg,rgba(0,245,255,0.08),rgba(0,255,136,0.08));border-color:rgba(0,245,255,0.25);color:var(--cyan);}
+.logout-btn{width:100%;padding:7px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--dim);font-family:"Share Tech Mono",monospace;font-size:10px;cursor:pointer;transition:all 0.2s;}
 .logout-btn:hover{border-color:var(--red);color:var(--red);}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.main-header{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;flex-shrink:0;gap:8px;}
-.tip-inline{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--text-dim);flex:1;}
-.tip-inline b{color:var(--cyan);}
-.topics{display:flex;flex-wrap:wrap;gap:7px;padding:10px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
-.topic-pill{background:rgba(0,0,0,0.5);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:11px;font-family:"Share Tech Mono",monospace;color:var(--text-dim);cursor:pointer;transition:all 0.2s;}
-.topic-pill:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 10px rgba(0,245,255,0.15);}
-.chat-window{flex:1;overflow-y:auto;padding:16px 20px;}
-.chat-window::-webkit-scrollbar{width:4px;}
-.chat-window::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-.message{display:flex;gap:10px;margin-bottom:16px;animation:msgIn 0.25s ease;}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.tip-bar{padding:8px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.tip-text{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--dim);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.tip-text b{color:var(--cyan);}
+.topics{display:flex;gap:6px;padding:7px 12px;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.topics::-webkit-scrollbar{display:none;}
+.topic-pill{background:rgba(0,0,0,0.5);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;font-family:"Share Tech Mono",monospace;color:var(--dim);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.2s;-webkit-tap-highlight-color:transparent;}
+.topic-pill:hover,.topic-pill:active{border-color:var(--cyan);color:var(--cyan);}
+.chat-window{flex:1;overflow-y:auto;padding:14px;-webkit-overflow-scrolling:touch;}
+.chat-window::-webkit-scrollbar{width:3px;}
+.chat-window::-webkit-scrollbar-thumb{background:var(--border);}
+.message{display:flex;gap:8px;margin-bottom:14px;animation:fadeUp 0.2s ease;}
 .message.user{flex-direction:row-reverse;}
-@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.avatar.bot{background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);}
-.avatar.user-av{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);}
-.bubble{max-width:76%;padding:10px 15px;border-radius:12px;font-size:13.5px;line-height:1.7;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.av.bot{background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);}
+.av.usr{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);}
+.bubble{max-width:80%;padding:10px 14px;border-radius:12px;font-size:13.5px;line-height:1.7;word-break:break-word;}
 .bubble.bot{background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.15);border-top-left-radius:2px;}
-.bubble.user{background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);border-top-right-radius:2px;color:#ffeaa0;font-family:"Share Tech Mono",monospace;font-size:12.5px;}
-.bubble.error{background:rgba(255,56,96,0.08);border:1px solid rgba(255,56,96,0.25);color:#ff6b8a;}
-.module-badge{display:inline-block;border-radius:4px;padding:1px 8px;font-family:"Share Tech Mono",monospace;font-size:9px;letter-spacing:1px;margin-bottom:7px;}
-.typing-indicator{display:flex;gap:5px;align-items:center;padding:11px 14px;background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.15);border-radius:12px;border-top-left-radius:2px;width:fit-content;}
+.bubble.usr{background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);border-top-right-radius:2px;color:#ffeaa0;font-family:"Share Tech Mono",monospace;font-size:12px;}
+.bubble.err{background:rgba(255,56,96,0.08);border:1px solid rgba(255,56,96,0.25);color:#ff6b8a;}
+.badge{display:inline-block;border-radius:4px;padding:1px 7px;font-family:"Share Tech Mono",monospace;font-size:9px;letter-spacing:1px;margin-bottom:5px;}
+.typing{display:flex;gap:5px;align-items:center;padding:10px 13px;background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.15);border-radius:12px;border-top-left-radius:2px;width:fit-content;}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:bounce 1.2s infinite;}
-.dot:nth-child(2){animation-delay:0.2s;}.dot:nth-child(3){animation-delay:0.4s;}
-@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:0.4}30%{transform:translateY(-5px);opacity:1}}
-.empty-state{text-align:center;padding:60px 20px;color:var(--text-dim);font-family:"Share Tech Mono",monospace;font-size:13px;line-height:2.2;}
-.empty-state .icon{font-size:44px;margin-bottom:14px;}
-.input-area{padding:12px 16px 16px;border-top:1px solid var(--border);flex-shrink:0;}
-.input-row{display:flex;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:8px 8px 8px 14px;transition:border-color 0.2s;}
-.input-row:focus-within{border-color:rgba(0,245,255,0.4);box-shadow:0 0 0 2px rgba(0,245,255,0.06);}
-textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:"Share Tech Mono",monospace;font-size:13px;resize:none;min-height:22px;max-height:90px;line-height:1.5;padding-top:3px;}
-textarea::placeholder{color:var(--text-dim);}
-.send-btn{background:linear-gradient(135deg,var(--cyan),var(--green));border:none;border-radius:8px;width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;transition:all 0.2s;}
-.send-btn:hover{transform:scale(1.07);box-shadow:0 0 16px rgba(0,245,255,0.3);}
-.send-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
-.send-btn svg{width:18px;height:18px;fill:#050a0f;}
-
-.payment-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:16px 28px;border-radius:12px;font-family:"Share Tech Mono",monospace;font-size:13px;text-align:center;animation:slideDown 0.4s ease;box-shadow:0 8px 32px rgba(0,0,0,0.4);min-width:320px;}
-.payment-toast.success{background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.4);color:#00ff88;}
-.payment-toast.failed{background:rgba(255,56,96,0.12);border:1px solid rgba(255,56,96,0.4);color:#ff3860;}
-@keyframes slideDown{from{top:-60px;opacity:0}to{top:20px;opacity:1}}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.empty{text-align:center;padding:40px 16px;color:var(--dim);font-family:"Share Tech Mono",monospace;font-size:12px;line-height:2.4;}
+.empty .icon{font-size:40px;margin-bottom:10px;}
+/* INPUT */
+.input-area{padding:10px 12px 14px;border-top:1px solid var(--border);flex-shrink:0;}
+.remaining{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--dim);text-align:right;margin-bottom:4px;min-height:14px;}
+.input-row{display:flex;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:7px 7px 7px 12px;transition:border-color 0.2s;}
+.input-row:focus-within{border-color:rgba(0,245,255,0.4);}
+textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:"Share Tech Mono",monospace;font-size:13px;resize:none;min-height:22px;max-height:100px;line-height:1.5;padding-top:2px;}
+textarea::placeholder{color:var(--dim);}
+.send-btn{background:linear-gradient(135deg,var(--cyan),var(--green));border:none;border-radius:8px;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;transition:all 0.2s;}
+.send-btn:disabled{opacity:.35;cursor:not-allowed;}
+.send-btn svg{width:17px;height:17px;fill:#050a0f;}
+/* OVERLAY */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:98;}
+/* TOAST */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:999;padding:12px 20px;border-radius:10px;font-family:"Share Tech Mono",monospace;font-size:12px;text-align:center;max-width:90vw;animation:toastIn .3s ease;}
+@keyframes toastIn{from{top:-50px;opacity:0}to{top:16px;opacity:1}}
+.toast.ok{background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.4);color:var(--green);}
+.toast.fail{background:rgba(255,56,96,.12);border:1px solid rgba(255,56,96,.4);color:var(--red);}
+/* MOBILE */
+@media(max-width:640px){
+  .topbar{display:flex;}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);width:260px;box-shadow:4px 0 20px rgba(0,0,0,0.5);}
+  .sidebar.open{transform:translateX(0);}
+  .overlay.open{display:block;}
+  .logo-sm,.user-info{display:none;}
+  .bubble{max-width:88%;font-size:13px;}
+  .tip-bar{padding:6px 10px;}
+  .tip-text{font-size:10px;}
+}
+@media(min-width:641px){
+  .topbar{display:none;}
+}
 </style>
 </head>
 <body>
-<div class="sidebar">
-  <div class="sidebar-header">
-    <div class="logo-sm">CYBERBUDDY</div>
-    <div class="user-info" id="userInfo">Loading...</div>
-  </div>
-  <button class="new-chat-btn" onclick="newChat()">+ NEW CHAT</button>
-  <div class="history-label">HISTORY</div>
-  <div class="history-list" id="historyList"></div>
-  <div class="sidebar-footer">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
-      <a href="/quiz" style="display:block;padding:7px;background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.2);border-radius:7px;color:var(--cyan);font-family:Share Tech Mono,monospace;font-size:10px;text-align:center;text-decoration:none;letter-spacing:1px;">🎯 QUIZ</a>
-      <a href="/leaderboard" style="display:block;padding:7px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:7px;color:#ffd700;font-family:Share Tech Mono,monospace;font-size:10px;text-align:center;text-decoration:none;letter-spacing:1px;">🏆 RANKS</a>
-      <a href="/profile" style="display:block;padding:7px;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.2);border-radius:7px;color:var(--green);font-family:Share Tech Mono,monospace;font-size:10px;text-align:center;text-decoration:none;letter-spacing:1px;">👤 PROFILE</a>
 
-      <a href="/scan" style="display:block;padding:7px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:7px;color:#ffd700;font-family:Share Tech Mono,monospace;font-size:10px;text-align:center;text-decoration:none;letter-spacing:1px;">📸 SCAN</a>
-      <a href="/scanner" style="display:block;padding:7px;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.2);border-radius:7px;color:var(--green);font-family:Share Tech Mono,monospace;font-size:10px;text-align:center;text-decoration:none;letter-spacing:1px;">🔍 WEB SCAN</a>
-      <a href="/pricing" style="grid-column:span 2;display:block;padding:7px;background:linear-gradient(135deg,rgba(0,245,255,0.1),rgba(0,255,136,0.1));border:1px solid rgba(0,245,255,0.3);border-radius:7px;color:var(--cyan);font-family:Share Tech Mono,monospace;font-size:10px;text-align:center;text-decoration:none;letter-spacing:1px;">⭐ UPGRADE PREMIUM</a>
-    </div>
-    <button class="logout-btn" onclick="logout()">LOGOUT</button>
-  </div>
+<div class="topbar">
+  <div class="topbar-logo">🛡️ CYBERBUDDY</div>
+  <div class="topbar-user" id="topUser"></div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
 </div>
 
-<div class="main">
-  <div class="main-header">
-    <div class="tip-inline"><b>TIP:</b> <span id="tipText">Loading...</span></div>
-    <button onclick="rotateTip()" style="background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:16px;" title="Next tip">&#8635;</button>
-  </div>
-  <div class="topics">
-    <button class="topic-pill" onclick="ask('phishing attacks and how to spot them')">&#127907; Phishing</button>
-    <button class="topic-pill" onclick="ask('how to create strong passwords')">&#128273; Passwords</button>
-    <button class="topic-pill" onclick="ask('staying safe on social media')">&#128241; Social Media</button>
-    <button class="topic-pill" onclick="ask('my account got hacked what do I do')">&#128275; Hacked Account</button>
-    <button class="topic-pill" onclick="ask('what is two-factor authentication')">&#128737; 2FA</button>
-    <button class="topic-pill" onclick="ask('what is malware and how to avoid it')">&#129440; Malware</button>
-    <button class="topic-pill" onclick="ask('what is a VPN and do I need one')">&#127760; VPN</button>
-    <button class="topic-pill" onclick="ask('how to spot a scam website')">&#128683; Scam Sites</button>
-  </div>
-  <div class="chat-window" id="chatWindow">
-    <div class="empty-state" id="emptyState">
-      <div class="icon">&#128737;</div>
-      Hey! I am CyberBuddy.<br>
-      Ask me anything about cybersecurity<br>
-      or tap a topic above to get started.
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<div class="app">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-sm">CYBERBUDDY</div>
+      <div class="user-info" id="userInfo">...</div>
+    </div>
+    <button class="new-chat-btn" onclick="newChat();closeMenu()">+ NEW CHAT</button>
+    <div class="history-label">RECENT</div>
+    <div class="history-list" id="histList"></div>
+    <div class="sidebar-footer">
+      <div class="nav-grid">
+        <a href="/quiz"        class="nav-link cyan">🎯 QUIZ</a>
+        <a href="/leaderboard" class="nav-link yellow">🏆 RANKS</a>
+        <a href="/profile"     class="nav-link green">👤 PROFILE</a>
+        <a href="/scan"        class="nav-link yellow">📸 IMAGE</a>
+        <a href="/scanner"     class="nav-link green">🔍 SCANNER</a>
+        <a href="/pricing"     class="nav-link full">⭐ GO PREMIUM</a>
+      </div>
+      <button class="logout-btn" onclick="logout()">LOGOUT</button>
     </div>
   </div>
-  <div class="input-area">
-    <div class="input-row">
-      <textarea id="userInput" placeholder="Ask a cybersecurity question..." rows="1"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"
-        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px'"></textarea>
-      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-      </button>
+
+  <div class="main">
+    <div class="tip-bar">
+      <div class="tip-text"><b>TIP:</b> <span id="tipTxt"></span></div>
+      <button onclick="nextTip()" style="background:none;border:none;cursor:pointer;color:var(--dim);font-size:14px;padding:4px;">↻</button>
+    </div>
+    <div class="topics">
+      <button class="topic-pill" onclick="ask('phishing attacks and how to spot them')">🎣 Phishing</button>
+      <button class="topic-pill" onclick="ask('how to create strong passwords')">🔑 Passwords</button>
+      <button class="topic-pill" onclick="ask('staying safe on social media')">📱 Social Media</button>
+      <button class="topic-pill" onclick="ask('my account got hacked what do I do')">🔓 Hacked</button>
+      <button class="topic-pill" onclick="ask('what is two-factor authentication')">🛡️ 2FA</button>
+      <button class="topic-pill" onclick="ask('what is malware and how to avoid it')">🦠 Malware</button>
+      <button class="topic-pill" onclick="ask('what is a VPN and do I need one')">🌐 VPN</button>
+      <button class="topic-pill" onclick="ask('how to spot a scam website')">🚫 Scams</button>
+    </div>
+    <div class="chat-window" id="chatWin">
+      <div class="empty" id="emptyState">
+        <div class="icon">🛡️</div>
+        Hey! I am CyberBuddy.<br>
+        Ask me anything about cybersecurity<br>
+        or tap a topic above to get started.
+      </div>
+    </div>
+    <div class="input-area">
+      <div class="remaining" id="remaining"></div>
+      <div class="input-row">
+        <textarea id="input" placeholder="Ask a cybersecurity question..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="send()">
+          <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-const TIPS = [
-  "Always use 2FA - it blocks 99% of automated attacks.",
-  "Never reuse passwords. Use a password manager!",
-  "Hover over links before clicking to see the real URL.",
-  "Public Wi-Fi is not secure. Avoid logging into accounts on it.",
-  "Phishing emails create urgency - always pause and think first.",
-  "Keep software updated - most hacks exploit unpatched systems.",
-  "Legit companies will NEVER ask for your password via email.",
-  "Check haveibeenpwned.com to see if your data was leaked.",
-  "A strong password is 3+ random words + numbers + symbols.",
-  "If something feels off about a site or email, trust your gut!"
-];
+const TIPS=["Always use 2FA — blocks 99% of automated attacks.","Never reuse passwords across sites.","Hover over links before clicking — check the real URL.","Public Wi-Fi is not secure. Use a VPN.","Phishing emails create urgency — always pause and think.","Keep software updated — most hacks exploit old versions.","Legit companies NEVER ask for your password via email.","Check haveibeenpwned.com to see if your data was leaked.","Strong password = 3 random words + numbers + symbols.","If something feels off about a site or email, trust your gut!"];
+const MODS={phish:{name:"PHISHING",c:"#ff6b6b",b:"rgba(255,107,107,0.1)"},pass:{name:"PASSWORDS",c:"#00f5ff",b:"rgba(0,245,255,0.08)"},social:{name:"SOCIAL MEDIA",c:"#ffd700",b:"rgba(255,215,0,0.08)"},hacked:{name:"HACKED ACCOUNT",c:"#ff3860",b:"rgba(255,56,96,0.08)"},twofa:{name:"2FA",c:"#00ff88",b:"rgba(0,255,136,0.08)"},malware:{name:"MALWARE",c:"#ff9f43",b:"rgba(255,159,67,0.08)"},vpn:{name:"VPN",c:"#a29bfe",b:"rgba(162,155,254,0.08)"},scam:{name:"SCAM SITES",c:"#fd79a8",b:"rgba(253,121,168,0.08)"}};
+let ti=0,convId=null,busy=false;
+ti=Math.floor(Math.random()*TIPS.length);
+document.getElementById("tipTxt").textContent=TIPS[ti];
+function nextTip(){ti=(ti+1)%TIPS.length;document.getElementById("tipTxt").textContent=TIPS[ti];}
+function toggleMenu(){document.getElementById("sidebar").classList.toggle("open");document.getElementById("overlay").classList.toggle("open");}
+function closeMenu(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
 
-const MODULES = {
-  phish:   {name:"PHISHING",      color:"#ff6b6b", bg:"rgba(255,107,107,0.12)"},
-  pass:    {name:"PASSWORDS",     color:"#00f5ff", bg:"rgba(0,245,255,0.1)"},
-  social:  {name:"SOCIAL MEDIA",  color:"#ffd700", bg:"rgba(255,215,0,0.1)"},
-  hacked:  {name:"HACKED ACCOUNT",color:"#ff3860", bg:"rgba(255,56,96,0.1)"},
-  twofa:   {name:"2FA",           color:"#00ff88", bg:"rgba(0,255,136,0.1)"},
-  malware: {name:"MALWARE",       color:"#ff9f43", bg:"rgba(255,159,67,0.1)"},
-  vpn:     {name:"VPN",           color:"#a29bfe", bg:"rgba(162,155,254,0.1)"},
-  scam:    {name:"SCAM SITES",    color:"#fd79a8", bg:"rgba(253,121,168,0.1)"},
-};
+// Payment toast
+(()=>{const p=new URLSearchParams(location.search).get("payment");if(!p)return;history.replaceState({},"","/chat");const t=document.createElement("div");t.className="toast "+(p==="success"?"ok":"fail");t.innerHTML=p==="success"?"🎉 <b>Payment successful!</b> Premium is now active.":"❌ <b>Payment failed.</b> Please try again.";document.body.appendChild(t);setTimeout(()=>t.remove(),5000);})();
 
-let tipIdx = Math.floor(Math.random() * TIPS.length);
-let currentConvId = null;
-let busy = false;
+// Init
+(async()=>{
+  try{
+    const d=await fetch("/api/auth/me").then(r=>r.json());
+    if(!d.loggedIn){location.href="/login";return;}
+    document.getElementById("userInfo").textContent="◇ "+d.username.toUpperCase();
+    document.getElementById("topUser").textContent=d.username;
+    loadHist();
+    const st=await fetch("/api/premium/status").then(r=>r.json());
+    if(!st.isPremium&&st.chatRemaining!=null)document.getElementById("remaining").textContent=st.chatRemaining+" messages left today";
+  }catch(e){console.error(e);}
+})();
 
-// Show tip
-document.getElementById("tipText").textContent = TIPS[tipIdx];
-function rotateTip(){ tipIdx=(tipIdx+1)%TIPS.length; document.getElementById("tipText").textContent=TIPS[tipIdx]; }
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-window.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const r = await fetch("/api/auth/me");
-    const d = await r.json();
-    if (!d.loggedIn) { window.location.href = "/login"; return; }
-    document.getElementById("userInfo").textContent = "\u25c7 " + d.username.toUpperCase();
-    loadHistory();
-  } catch(e) {
-    document.getElementById("userInfo").textContent = "ERROR";
-    console.error("Auth check failed:", e);
-  }
-});
-
-// ── HISTORY ───────────────────────────────────────────────────────────────────
-async function loadHistory() {
-  try {
-    const r = await fetch("/api/history/conversations");
-    const d = await r.json();
-    const list = document.getElementById("historyList");
-    const convs = d.conversations || [];
-    if (!convs.length) {
-      list.innerHTML = "<div style='padding:14px;font-family:Share Tech Mono,monospace;font-size:11px;color:#2a4a5a;text-align:center'>No chats yet</div>";
-      return;
-    }
-    list.innerHTML = convs.map(c => `
-      <div class="conv-item${currentConvId===c.id?' active':''}" onclick="loadConv('${c.id}')" data-id="${c.id}">
-        <div class="conv-title">${esc(c.title)}</div>
-        <button class="del-btn" onclick="event.stopPropagation();delConv('${c.id}')" title="Delete">&#x2715;</button>
-      </div>`).join("");
-  } catch(e) { console.error("loadHistory error:", e); }
+async function loadHist(){
+  try{
+    const d=await fetch("/api/history/conversations").then(r=>r.json());
+    const el=document.getElementById("histList");
+    if(!d.conversations?.length){el.innerHTML="<div style='padding:10px;font-family:Share Tech Mono,monospace;font-size:10px;color:#2a4a5a;text-align:center'>No chats yet</div>";return;}
+    el.innerHTML=d.conversations.map(c=>`<div class="conv-item${convId===c.id?" active":""}" onclick="loadConv('${c.id}');closeMenu()" data-id="${c.id}"><div class="conv-title">${esc(c.title)}</div><button class="del-btn" onclick="event.stopPropagation();delConv('${c.id}')">✕</button></div>`).join("");
+  }catch(e){}
 }
 
-async function loadConv(id) {
-  currentConvId = id;
-  document.querySelectorAll(".conv-item").forEach(el => el.classList.toggle("active", el.dataset.id===id));
-  try {
-    const r = await fetch("/api/history/conversations/" + id);
-    const d = await r.json();
-    const win = document.getElementById("chatWindow");
-    const es = document.getElementById("emptyState"); if(es) es.remove();
-    win.innerHTML = "";
-    (d.messages||[]).forEach(m => addBubble(m.role, m.content.replace(/\n/g,"<br>"), null, true));
-    win.scrollTop = win.scrollHeight;
-  } catch(e) { console.error("loadConv error:", e); }
+async function loadConv(id){
+  convId=id;
+  document.querySelectorAll(".conv-item").forEach(el=>el.classList.toggle("active",el.dataset.id===id));
+  const d=await fetch("/api/history/conversations/"+id).then(r=>r.json());
+  const win=document.getElementById("chatWin");
+  const es=document.getElementById("emptyState");if(es)es.remove();
+  win.innerHTML="";
+  (d.messages||[]).forEach(m=>bubble(m.role,m.content.replace(/\n/g,"<br>"),null,true));
+  win.scrollTop=win.scrollHeight;
 }
 
-async function delConv(id) {
-  if (!confirm("Delete this conversation?")) return;
-  await fetch("/api/history/conversations/"+id, {method:"DELETE"});
-  if (currentConvId===id) { currentConvId=null; newChat(); }
-  loadHistory();
+async function delConv(id){
+  if(!confirm("Delete?"))return;
+  await fetch("/api/history/conversations/"+id,{method:"DELETE"});
+  if(convId===id){convId=null;newChat();}
+  loadHist();
 }
 
-function newChat() {
-  currentConvId = null;
+function newChat(){
+  convId=null;
   document.querySelectorAll(".conv-item").forEach(el=>el.classList.remove("active"));
-  document.getElementById("chatWindow").innerHTML = `<div class="empty-state" id="emptyState">
-    <div class="icon">&#128737;</div>Hey! I am CyberBuddy.<br>Ask me anything about cybersecurity<br>or tap a topic above to get started.</div>`;
-  document.getElementById("userInput").focus();
+  document.getElementById("chatWin").innerHTML=`<div class="empty" id="emptyState"><div class="icon">🛡️</div>Hey! I am CyberBuddy.<br>Ask me anything about cybersecurity<br>or tap a topic above to get started.</div>`;
+  document.getElementById("input").focus();
 }
 
-async function logout() {
-  await fetch("/api/auth/logout", {method:"POST"});
-  window.location.href = "/login";
-}
+async function logout(){await fetch("/api/auth/logout",{method:"POST"});location.href="/login";}
+function ask(t){document.getElementById("input").value="Tell me about "+t;send();}
 
-// ── CHAT ──────────────────────────────────────────────────────────────────────
-function ask(topic) {
-  document.getElementById("userInput").value = "Tell me about " + topic;
-  sendMessage();
-}
-
-async function sendMessage() {
-  const input = document.getElementById("userInput");
-  const btn   = document.getElementById("sendBtn");
-  const q = input.value.trim();
-  if (!q || busy) return;
-
-  input.value = ""; input.style.height = "auto";
-  busy = true; btn.disabled = true;
-
-  const es = document.getElementById("emptyState"); if(es) es.remove();
-  addBubble("user", esc(q), null);
-  showTyping();
-
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: q, conversationId: currentConvId })
-    });
-
-    removeTyping();
-
-    // Check if response is ok
-    if (!res.ok) {
-      addBubble("bot", "Server error: HTTP " + res.status + ". Check your terminal.", null, false, true);
-      busy = false; btn.disabled = false; return;
+async function send(){
+  const inp=document.getElementById("input"),btn=document.getElementById("sendBtn");
+  const q=inp.value.trim();if(!q||busy)return;
+  inp.value="";inp.style.height="auto";
+  busy=true;btn.disabled=true;
+  const es=document.getElementById("emptyState");if(es)es.remove();
+  bubble("user",esc(q));typing(true);
+  try{
+    const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q,conversationId:convId})});
+    typing(false);
+    if(!res.ok){bubble("bot","⚠️ Server error: "+res.status,null,false,true);busy=false;btn.disabled=false;return;}
+    const data=await res.json();
+    if(data.error){
+      bubble("bot","⚠️ "+esc(data.error)+(data.limitReached?' — <a href="/pricing" style="color:var(--cyan)">Upgrade Premium →</a>':""),null,false,true);
+    }else if(data.response){
+      if(!convId){convId=data.conversationId;loadHist();}
+      bubble("bot",data.response.replace(/\n/g,"<br>"),getMod(q));
+      if(data.remaining!=null)document.getElementById("remaining").textContent=data.remaining+" messages left today";
+      else document.getElementById("remaining").textContent="";
     }
-
-    const data = await res.json();
-
-    if (data.error) {
-      addBubble("bot", "&#9888;&#65039; " + esc(data.error), null, false, true);
-    } else if (data.response) {
-      if (!currentConvId) { currentConvId = data.conversationId; loadHistory(); }
-      const mod = detectMod(q);
-      addBubble("bot", data.response.replace(/\n/g,"<br>"), mod);
-    } else {
-      addBubble("bot", "&#9888;&#65039; Empty response. Open terminal to check for errors.", null, false, true);
-      console.warn("Unexpected response:", data);
-    }
-  } catch(e) {
-    removeTyping();
-    console.error("Fetch error:", e);
-    addBubble("bot", "&#9888;&#65039; Could not reach server: " + e.message, null, false, true);
-  }
-
-  busy = false; btn.disabled = false;
-  document.getElementById("userInput").focus();
+  }catch(e){typing(false);bubble("bot","⚠️ Cannot reach server. "+e.message,null,false,true);}
+  busy=false;btn.disabled=false;
+  document.getElementById("input").focus();
 }
 
-// ── UI HELPERS ────────────────────────────────────────────────────────────────
-function addBubble(role, html, mod, silent=false, isErr=false) {
-  const win = document.getElementById("chatWindow");
-  const wrap = document.createElement("div");
-  wrap.className = "message" + (role==="user"?" user":"");
-
-  const av = document.createElement("div");
-  av.className = "avatar " + (role==="user"?"user-av":"bot");
-  av.textContent = role==="user" ? "\uD83C\uDF93" : "\uD83E\uDD16";
-
-  const bub = document.createElement("div");
-  bub.className = "bubble " + (role==="user"?"user":(isErr?"error":"bot"));
-
-  if (role==="bot" && mod && !isErr) {
-    const badge = document.createElement("div");
-    badge.className = "module-badge";
-    badge.style.cssText = `color:${mod.color};background:${mod.bg};border:1px solid ${mod.color}44`;
-    badge.textContent = "\uD83D\uDCE1 " + mod.name;
-    bub.appendChild(badge);
-    bub.appendChild(document.createElement("br"));
-  }
-
-  const content = document.createElement("span");
-  content.innerHTML = html;
-  bub.appendChild(content);
-  wrap.appendChild(av); wrap.appendChild(bub);
-  win.appendChild(wrap);
-  if (!silent) win.scrollTop = win.scrollHeight;
+function bubble(role,html,mod,silent=false,isErr=false){
+  const win=document.getElementById("chatWin");
+  const w=document.createElement("div");w.className="message "+(role==="user"?"user":"");
+  const av=document.createElement("div");av.className="av "+(role==="user"?"usr":"bot");av.textContent=role==="user"?"🎓":"🤖";
+  const b=document.createElement("div");b.className="bubble "+(role==="user"?"usr":(isErr?"err":"bot"));
+  if(role==="bot"&&mod&&!isErr){const bg=document.createElement("div");bg.className="badge";bg.style.cssText=`color:${mod.c};background:${mod.b};border:1px solid ${mod.c}33`;bg.textContent="📡 "+mod.name;b.appendChild(bg);b.appendChild(document.createElement("br"));}
+  const s=document.createElement("span");s.innerHTML=html;b.appendChild(s);
+  w.appendChild(av);w.appendChild(b);win.appendChild(w);
+  if(!silent)win.scrollTop=win.scrollHeight;
 }
 
-function showTyping() {
-  const win = document.getElementById("chatWindow");
-  const wrap = document.createElement("div"); wrap.className="message"; wrap.id="typingMsg";
-  const av = document.createElement("div"); av.className="avatar bot"; av.textContent="\uD83E\uDD16";
-  const ind = document.createElement("div"); ind.className="typing-indicator";
-  ind.innerHTML="<div class='dot'></div><div class='dot'></div><div class='dot'></div>";
-  wrap.appendChild(av); wrap.appendChild(ind);
-  win.appendChild(wrap); win.scrollTop=win.scrollHeight;
-}
-function removeTyping() { const el=document.getElementById("typingMsg"); if(el) el.remove(); }
-
-function detectMod(t) {
-  t = t.toLowerCase();
-  if (/phish|fake.?email|suspicious.?link/.test(t)) return MODULES.phish;
-  if (/password|passphrase|credential/.test(t)) return MODULES.pass;
-  if (/social.?media|instagram|tiktok|facebook|snapchat/.test(t)) return MODULES.social;
-  if (/hacked|hack|compromised|stolen/.test(t)) return MODULES.hacked;
-  if (/2fa|two.factor|authenticat|mfa/.test(t)) return MODULES.twofa;
-  if (/malware|virus|ransomware|spyware/.test(t)) return MODULES.malware;
-  if (/vpn|virtual.private/.test(t)) return MODULES.vpn;
-  if (/scam|fake.?site/.test(t)) return MODULES.scam;
-  return null;
+function typing(show){
+  const existing=document.getElementById("typingMsg");if(existing)existing.remove();
+  if(!show)return;
+  const w=document.createElement("div");w.id="typingMsg";w.className="message";
+  const av=document.createElement("div");av.className="av bot";av.textContent="🤖";
+  const ind=document.createElement("div");ind.className="typing";ind.innerHTML="<div class='dot'></div><div class='dot'></div><div class='dot'></div>";
+  w.appendChild(av);w.appendChild(ind);
+  const win=document.getElementById("chatWin");win.appendChild(w);win.scrollTop=win.scrollHeight;
 }
 
-function esc(t) { return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function getMod(t){t=t.toLowerCase();if(/phish|fake.?email/.test(t))return MODS.phish;if(/password|passphrase/.test(t))return MODS.pass;if(/social.?media|instagram|facebook/.test(t))return MODS.social;if(/hacked|compromised/.test(t))return MODS.hacked;if(/2fa|two.factor|authenticat/.test(t))return MODS.twofa;if(/malware|virus|ransomware/.test(t))return MODS.malware;if(/vpn|virtual.private/.test(t))return MODS.vpn;if(/scam|fake.?site/.test(t))return MODS.scam;return null;}
+function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 </script>
-</body></html>
+</body>
+</html>
