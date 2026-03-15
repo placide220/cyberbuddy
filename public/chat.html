@@ -192,19 +192,19 @@ function closeMenu(){document.getElementById("sidebar").classList.remove("open")
 // Init
 (async()=>{
   try{
-    const d=await fetch("/api/auth/me").then(r=>r.json());
-    if(!d.loggedIn){location.href="/login";return;}
+    const d=await fetch("/api/auth/me",{credentials:"include"}).then(r=>r.json());
+    if(!d.loggedIn){location.replace("/login");return;}
     document.getElementById("userInfo").textContent="◇ "+d.username.toUpperCase();
     document.getElementById("topUser").textContent=d.username;
     loadHist();
-    const st=await fetch("/api/premium/status").then(r=>r.json());
+    const st=await fetch("/api/premium/status",{credentials:"include"}).then(r=>r.json());
     if(!st.isPremium&&st.chatRemaining!=null)document.getElementById("remaining").textContent=st.chatRemaining+" messages left today";
   }catch(e){console.error(e);}
 })();
 
 async function loadHist(){
   try{
-    const d=await fetch("/api/history/conversations").then(r=>r.json());
+    const d=await fetch("/api/history/conversations",{credentials:"include"}).then(r=>r.json());
     const el=document.getElementById("histList");
     if(!d.conversations?.length){el.innerHTML="<div style='padding:10px;font-family:Share Tech Mono,monospace;font-size:10px;color:#2a4a5a;text-align:center'>No chats yet</div>";return;}
     el.innerHTML=d.conversations.map(c=>`<div class="conv-item${convId===c.id?" active":""}" onclick="loadConv('${c.id}');closeMenu()" data-id="${c.id}"><div class="conv-title">${esc(c.title)}</div><button class="del-btn" onclick="event.stopPropagation();delConv('${c.id}')">✕</button></div>`).join("");
@@ -247,7 +247,7 @@ async function send(){
   const es=document.getElementById("emptyState");if(es)es.remove();
   bubble("user",esc(q));typing(true);
   try{
-    const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q,conversationId:convId})});
+    const res=await fetch("/api/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q,conversationId:convId})});
     typing(false);
     if(!res.ok){bubble("bot","⚠️ Server error: "+res.status,null,false,true);busy=false;btn.disabled=false;return;}
     const data=await res.json();

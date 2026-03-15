@@ -205,10 +205,12 @@ app.post("/api/auth/register", authLimiter, async (req, res) => {
       }
     }
     req.session.userId = id; req.session.username = username;
-    logger.info("New user registered", { username, email: emailInput, ip: getIp(req) });
-    // Send welcome email (non-blocking)
-    email_service.sendWelcome(emailInput, username).catch(()=>{});
-    res.json({ success: true, username });
+    req.session.save((err) => {
+      if(err) logger.error("Session save error on register", { error: err.message });
+      logger.info("New user registered", { username, email: emailInput, ip: getIp(req) });
+      email_service.sendWelcome(emailInput, username).catch(()=>{});
+      res.json({ success: true, username });
+    });
   } catch(e) {
     logger.error("Register error", { error: e.message });
     res.json({ error: "Registration failed. Please try again." });
@@ -226,10 +228,12 @@ app.post("/api/auth/login", authLimiter, async (req, res) => {
       return res.json({ error: "Invalid email or password." });
     const { id, username } = r.rows[0];
     req.session.userId = id; req.session.username = username;
-    logger.info("User logged in", { username, ip: getIp(req) });
-    // Login alert email (non-blocking)
-    email_service.sendLoginAlert(emailInput, username, getIp(req)).catch(()=>{});
-    res.json({ success: true, username });
+    req.session.save((err) => {
+      if(err) logger.error("Session save error on login", { error: err.message });
+      logger.info("User logged in", { username, ip: getIp(req) });
+      email_service.sendLoginAlert(emailInput, username, getIp(req)).catch(()=>{});
+      res.json({ success: true, username });
+    });
   } catch(e) {
     logger.error("Login error", { error: e.message });
     res.json({ error: "Login failed. Please try again." });
@@ -316,13 +320,57 @@ app.post("/api/chat", requireAuth, chatLimiter, async (req, res) => {
     }
     const key = process.env.GROQ_API_KEY;
     if (!key || key.startsWith("your_")) return res.json({ error: "GROQ_API_KEY not configured." });
+
+    // Build conversation history for context (last 10 messages)
+    let history = [];
+    if (conversationId) {
+      try {
+        const histRes = await query(
+          "SELECT role,content FROM messages WHERE conversation_id=$1 ORDER BY created_at ASC",
+          [conversationId]
+        );
+        history = histRes.rows.slice(-10).map(m => ({
+          role: m.role === "bot" ? "assistant" : "user",
+          content: m.content
+        }));
+      } catch(e) { /* ignore history errors */ }
+    }
+
     const gr = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer "+key },
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile", max_tokens: 800,
         messages: [
-          { role: "system", content: "You are CyberBuddy, a friendly cybersecurity assistant for students. Be clear and practical. Keep responses to 3-5 sentences. If off-topic, redirect to cybersecurity." },
+          { role: "system", content: `You are CyberBuddy, a friendly and empathetic cybersecurity assistant for students in Africa. You help people stay safe online.
+
+PERSONALITY: Warm, caring, patient. You speak like a trusted friend who happens to be a cybersecurity expert.
+
+STRICT RULES:
+1. When someone reports being HACKED, SCAMMED, PHISHED, or any SECURITY PROBLEM:
+   - FIRST: Express genuine sympathy ("I'm really sorry to hear that", "That must be stressful", "Don't worry, we'll sort this out together")
+   - SECOND: Ask ONE or TWO specific follow-up questions to understand their situation before giving advice
+   - THIRD: Only after they respond with details, give specific targeted advice
+   - NEVER jump straight to generic tips without first understanding what happened
+
+2. Ask follow-up questions like:
+   - "Which account or platform was affected?"
+   - "Do you still have access to it right now?"
+   - "When did you first notice something was wrong?"
+   - "Did you click any links or share any information recently?"
+   - "Have you noticed any unusual transactions or messages sent from your account?"
+
+3. Be CONVERSATIONAL and SPECIFIC — tailor your advice to exactly what they tell you.
+4. Keep responses SHORT — 3-5 sentences max unless giving step-by-step instructions.
+5. Use simple language — avoid heavy technical jargon.
+6. If someone is off-topic, gently redirect to cybersecurity.
+7. Remember everything from earlier in the conversation.
+
+EXAMPLES:
+- User: "I got hacked" → "Oh no, I'm really sorry to hear that! Don't panic — we'll work through this together. To help you properly, can you tell me which account was hacked (email, social media, mobile money)? And do you still have access to it right now?"
+- User: "I was scammed" → "I'm so sorry that happened to you — unfortunately it's more common than people think. Let's figure out the best way to help you. What exactly happened — did someone ask you to send money, share a password, or click a link?"
+- User: "someone logged into my account" → "That's really alarming and I understand how scary that must feel. Let's act quickly! Which account is it, and are you still able to log in to it yourself right now?"` },
+          ...history,
           { role: "user", content: question }
         ]
       })

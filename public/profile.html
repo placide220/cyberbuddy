@@ -85,6 +85,12 @@ input:focus{border-color:var(--cyan);}
   .bubble{max-width:92%;}
 }
 
+
+.pw-wrap{position:relative;}
+.pw-wrap input{width:100%;padding-right:44px;}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--dim);font-size:17px;padding:4px;transition:color 0.2s;line-height:1;}
+.eye-btn:hover{color:var(--cyan);}
+
 </style>
 </head>
 <body>
@@ -132,9 +138,9 @@ input:focus{border-color:var(--cyan);}
     <div class="card">
       <div class="section-title">CHANGE PASSWORD</div>
       <div id="pwMsg" class="msg"></div>
-      <input type="password" id="pwCurrent" placeholder="Current password"/>
-      <input type="password" id="pwNew" placeholder="New password (min 6 chars)"/>
-      <input type="password" id="pwConfirm" placeholder="Confirm new password"/>
+      <div class="pw-wrap"><input type="password" id="pwCurrent" placeholder="Current password"/><button type="button" class="eye-btn" onclick="togglePw(\'pwCurrent\',this)" tabindex="-1">👁️</button></div>
+      <div class="pw-wrap"><input type="password" id="pwNew" placeholder="New password (min 6 chars)"/><button type="button" class="eye-btn" onclick="togglePw(\'pwNew\',this)" tabindex="-1">👁️</button></div>
+      <div class="pw-wrap"><input type="password" id="pwConfirm" placeholder="Confirm new password"/><button type="button" class="eye-btn" onclick="togglePw(\'pwConfirm\',this)" tabindex="-1">👁️</button></div>
       <button class="btn btn-primary" onclick="changePassword()">UPDATE PASSWORD</button>
     </div>
   </div>
@@ -219,5 +225,17 @@ async function changePassword() {
 
 function showMsg(id,type,text){ const el=document.getElementById(id); el.className="msg "+type; el.textContent=text; el.style.display="block"; }
 load();
+
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '👁️';
+  }
+}
+
 </script>
 </body></html>
