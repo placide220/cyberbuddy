@@ -2,47 +2,58 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="shortcut icon" href="/favicon.svg">
-  <meta property="og:image" content="/favicon.svg">  <meta property="og:title" content="CyberBuddy - Image Scanner">
-  <meta property="og:description" content="Detect scams and phishing in screenshots">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://cyberbuddy.rw">
-  <meta property="og:image" content="https://cyberbuddy.rw/favicon.svg">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="CyberBuddy - Image Scanner">
-  <meta name="twitter:description" content="Detect scams and phishing in screenshots">
-  <meta name="description" content="Detect scams and phishing in screenshots">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="description" content="Detect scams and phishing in screenshots">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <title>CyberBuddy - Image Scanner</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#050a0f;--cyan:#00f5ff;--green:#00ff88;--yellow:#ffd700;--red:#ff3860;--text:#c8e6f0;--dim:#4a7a8a;--border:#1a3a4a;}
+:root{--bg:#050a0f;--cyan:#00f5ff;--green:#00ff88;--yellow:#ffd700;--red:#ff3860;--orange:#ff8c00;--text:#c8e6f0;--dim:#4a7a8a;--border:#1a3a4a;--navy:#0a1520;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-height:100vh;padding:20px;background-image:linear-gradient(rgba(0,245,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.015) 1px,transparent 1px);background-size:40px 40px;}
-.nav{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:12px;margin-bottom:24px;}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(10,21,32,0.95);border:1px solid var(--border);border-radius:12px;margin-bottom:24px;flex-wrap:wrap;gap:8px;}
 .logo{font-family:"Orbitron",monospace;font-size:16px;font-weight:900;background:linear-gradient(90deg,#00f5ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.nav a{color:var(--dim);text-decoration:none;font-family:"Share Tech Mono",monospace;font-size:12px;margin-left:16px;}
+.nav-links{display:flex;flex-wrap:wrap;gap:6px;}
+.nav-links a{color:var(--dim);text-decoration:none;font-family:"Share Tech Mono",monospace;font-size:11px;padding:4px 8px;border-radius:5px;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--cyan);}
 .container{max-width:700px;margin:0 auto;}
 .page-title{font-family:"Orbitron",monospace;font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--cyan),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
 .page-sub{color:var(--dim);font-family:"Share Tech Mono",monospace;font-size:12px;margin-bottom:24px;}
 .card{background:rgba(10,21,32,0.9);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px;}
-.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;}
+
+/* UPLOAD ZONE */
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;}
 .upload-zone:hover,.upload-zone.drag{border-color:var(--cyan);background:rgba(0,245,255,0.03);}
 .upload-icon{font-size:40px;margin-bottom:12px;}
 .upload-label{font-family:"Orbitron",monospace;font-size:13px;color:var(--text);margin-bottom:6px;}
 .upload-sub{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--dim);}
+.upload-limit{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--cyan);margin-top:6px;}
 #fileInput{display:none;}
-.preview{max-width:100%;max-height:300px;border-radius:8px;margin:16px 0;display:none;}
-.btn{padding:12px 28px;border:none;border-radius:10px;font-family:"Orbitron",monospace;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all 0.2s;display:inline-block;}
-.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:#050a0f;}
+
+/* IMAGE PREVIEWS */
+.previews{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+.preview-item{position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.preview-item img{width:100%;height:100%;object-fit:cover;}
+.preview-remove{position:absolute;top:4px;right:4px;background:rgba(255,56,96,0.8);border:none;border-radius:50%;width:20px;height:20px;color:white;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.preview-count{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--cyan);margin-top:8px;}
+
+/* BUTTONS */
+.btn{padding:12px 24px;border:none;border-radius:10px;font-family:"Orbitron",monospace;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:#050a0f;width:100%;margin-top:16px;padding:14px;}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(0,245,255,0.3);}
 .btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
-.scanning{display:none;text-align:center;padding:30px;}
-.scan-anim{font-size:48px;animation:scan 1s infinite;}
-@keyframes scan{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.1)}}
-.scan-txt{font-family:"Orbitron",monospace;font-size:13px;color:var(--cyan);margin-top:12px;}
-/* Results */
+
+/* SCANNING */
+.scanning-card{background:rgba(10,21,32,0.9);border:1px solid var(--cyan);border-radius:14px;padding:36px;text-align:center;display:none;margin-bottom:20px;}
+.scan-anim{font-size:48px;animation:spin 2s linear infinite;display:inline-block;}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.scan-status{font-family:"Orbitron",monospace;font-size:14px;color:var(--cyan);margin:14px 0 8px;letter-spacing:2px;}
+.scan-detail{font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--dim);}
+.progress-bar{height:3px;background:rgba(0,245,255,0.1);border-radius:2px;margin:16px 0 0;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));animation:prog 4s ease-in-out infinite;}
+@keyframes prog{0%{width:5%}80%{width:90%}100%{width:90%}}
+
+/* RESULTS */
 .result{display:none;}
 .verdict-banner{border-radius:12px;padding:20px 24px;margin-bottom:16px;text-align:center;}
 .verdict-banner.SAFE{background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.3);}
@@ -53,71 +64,70 @@ body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-h
 .SAFE .verdict-text{color:var(--green);}
 .SUSPICIOUS .verdict-text{color:var(--yellow);}
 .SCAM .verdict-text{color:var(--red);}
-.confidence{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--dim);margin-top:4px;}
+.verdict-meta{font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--dim);margin-top:6px;}
 .risk-bar{height:8px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;margin:14px 0;}
 .risk-fill{height:100%;border-radius:4px;transition:width 1s;}
 .info-row{display:flex;justify-content:space-between;font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--dim);margin-bottom:6px;}
 .section-title{font-family:"Orbitron",monospace;font-size:11px;letter-spacing:2px;color:var(--cyan);margin-bottom:12px;margin-top:16px;}
 .flag{background:rgba(255,56,96,0.08);border:1px solid rgba(255,56,96,0.2);border-radius:6px;padding:7px 12px;font-family:"Share Tech Mono",monospace;font-size:12px;color:#ff8099;margin-bottom:6px;}
 .summary-text{font-size:14px;line-height:1.7;color:var(--text);margin-bottom:12px;}
-.rec-box{background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.2);border-radius:8px;padding:14px;font-size:13px;color:var(--cyan);}
+.rec-box{background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.2);border-radius:8px;padding:14px;font-size:13px;color:var(--cyan);line-height:1.6;}
+.images-badge{display:inline-block;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:3px 12px;font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--cyan);margin-top:4px;}
+
+/* LOCK */
 .lock-overlay{text-align:center;padding:40px 20px;}
 .lock-icon{font-size:52px;margin-bottom:16px;}
 .lock-title{font-family:"Orbitron",monospace;font-size:18px;font-weight:700;color:var(--yellow);margin-bottom:8px;}
-.lock-sub{font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--dim);margin-bottom:20px;line-height:1.6;}
+.lock-sub{font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--dim);margin-bottom:20px;line-height:1.8;}
+.lock-features{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--dim);line-height:2.2;text-align:left;}
+.upgrade-btn{display:inline-block;padding:14px 32px;background:linear-gradient(135deg,var(--cyan),var(--green));color:#050a0f;font-family:"Orbitron",monospace;font-size:12px;font-weight:700;letter-spacing:2px;border-radius:10px;text-decoration:none;transition:all 0.2s;}
+.upgrade-btn:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(0,245,255,0.3);}
 
-/* ── MOBILE RESPONSIVE ──────────────────────────────── */
+/* ERROR */
+.error-card{background:rgba(255,56,96,0.08);border:1px solid rgba(255,56,96,0.3);border-radius:12px;padding:20px;text-align:center;display:none;margin-bottom:16px;}
+.error-msg{font-family:"Share Tech Mono",monospace;font-size:13px;color:#ff8099;}
+
 @media(max-width:640px){
   body{padding:12px;}
-  .nav{padding:10px 14px;margin-bottom:16px;flex-wrap:wrap;gap:6px;}
-  .nav-links{display:flex;flex-wrap:wrap;gap:6px;}
-  .nav-links a{margin-left:0;}
-  .grid2,.stats-grid{grid-template-columns:1fr !important;}
-  .cards{grid-template-columns:1fr !important;}
-  .quiz-grid{grid-template-columns:1fr !important;}
-  .input-row{flex-direction:column;}
-  .scan-btn{width:100% !important;}
-  .url-input{font-size:16px;}
-  .score-card{grid-template-columns:1fr !important;text-align:center;}
-  .months-grid{grid-template-columns:1fr 1fr 1fr;}
-  .modal{margin:10px;max-width:calc(100vw - 20px);}
-  .tabs{flex-wrap:wrap;}
-  .tab{font-size:10px;padding:8px 10px;}
-  .board{max-width:100%;}
-  table{font-size:12px;}
-  .tbl th,.tbl td{padding:8px 6px;}
-  h1,.hero-title,.page-title{font-size:18px !important;}
-  .plan-price{font-size:30px !important;}
+  .nav{padding:10px 14px;}
+  .page-title{font-size:18px;}
+  .preview-item{width:80px;height:80px;}
+  .verdict-text{font-size:20px;}
 }
-@media(max-width:380px){
-  .nav-links a{font-size:10px;}
-  .bubble{max-width:92%;}
-}
-
 </style>
 </head>
 <body>
 <div class="nav">
   <div class="logo">CYBERBUDDY</div>
-  <div>
+  <div class="nav-links">
     <a href="/chat">💬 Chat</a>
     <a href="/quiz">🎯 Quiz</a>
-    <a href="/scan">📸 Scan</a>
+    <a href="/scan" class="active">📸 Image Scan</a>
+    <a href="/scanner">🔍 Web Scan</a>
     <a href="/profile">👤 Profile</a>
   </div>
 </div>
 
 <div class="container">
   <div class="page-title">📸 SCAM IMAGE DETECTOR</div>
-  <div class="page-sub">// UPLOAD A SCREENSHOT — AI WILL DETECT SCAMS, PHISHING & FAKE SITES //</div>
+  <div class="page-sub">// UPLOAD UP TO 5 SCREENSHOTS — AI WILL DETECT SCAMS, PHISHING & FAKE SITES //</div>
 
   <div class="card" id="uploadCard">
     <!-- Lock for free users -->
-    <div id="lockView" class="lock-overlay" style="display:none">
-      <div class="lock-icon">🔒</div>
-      <div class="lock-title">PREMIUM FEATURE</div>
-      <div class="lock-sub">Image scam detection uses AI vision to analyze screenshots.<br>Upgrade to Premium to access this feature.</div>
-      <a href="/pricing" class="btn btn-primary">UPGRADE FOR $2/MONTH →</a>
+    <div id="lockView" style="display:none">
+      <div class="lock-overlay">
+        <div class="lock-icon">🔒</div>
+        <div class="lock-title">PREMIUM FEATURE</div>
+        <div class="lock-sub">Upload screenshots and our AI will instantly detect scams,<br>phishing attempts, fake websites and suspicious content.</div>
+        <div class="lock-features">
+          ✅ Upload up to 5 images at once<br>
+          ✅ AI analyzes screenshots, emails, social media posts<br>
+          ✅ Detects fake login pages & phishing sites<br>
+          ✅ Risk score + red flags + recommendation<br>
+          ✅ Scan history saved to your profile
+        </div>
+        <a href="/pricing" class="upgrade-btn">UPGRADE FOR $2/MONTH →</a>
+      </div>
     </div>
 
     <!-- Upload for premium users -->
@@ -125,110 +135,225 @@ body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-h
       <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
         <div class="upload-icon">📁</div>
         <div class="upload-label">DRAG & DROP or CLICK TO UPLOAD</div>
-        <div class="upload-sub">Screenshots, emails, social media posts, websites<br>PNG, JPG, WEBP — max 10MB</div>
-        <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this.files[0])"/>
+        <div class="upload-sub">Screenshots, emails, social media posts, websites</div>
+        <div class="upload-limit">PNG, JPG, WEBP · Max 10MB each · Up to 5 images</div>
+        <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(this.files)"/>
       </div>
-      <img id="preview" class="preview"/>
-      <div style="text-align:center;margin-top:16px;">
-        <button class="btn btn-primary" id="scanBtn" onclick="scanImage()" disabled>SCAN FOR SCAMS →</button>
-      </div>
+
+      <div class="previews" id="previewsGrid"></div>
+      <div class="preview-count" id="previewCount"></div>
+
+      <button class="btn btn-primary" id="scanBtn" onclick="scanImages()" disabled>
+        🔍 SCAN FOR SCAMS
+      </button>
     </div>
   </div>
 
   <!-- Scanning animation -->
-  <div class="card scanning" id="scanningCard">
+  <div class="scanning-card" id="scanningCard">
     <div class="scan-anim">🔍</div>
-    <div class="scan-txt">AI IS ANALYZING YOUR IMAGE...</div>
-    <div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--dim);margin-top:8px">Checking for phishing signs, fake elements, suspicious content...</div>
+    <div class="scan-status" id="scanStatus">ANALYZING IMAGES...</div>
+    <div class="scan-detail" id="scanDetail">AI is checking for scams and phishing...</div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-card" id="errorCard">
+    <div style="font-size:32px;margin-bottom:10px">⚠️</div>
+    <div class="error-msg" id="errorMsg"></div>
   </div>
 
   <!-- Results -->
-  <div class="card result" id="resultCard">
+  <div class="result" id="resultCard">
     <div id="verdictBanner" class="verdict-banner">
       <div class="verdict-icon" id="verdictIcon"></div>
       <div class="verdict-text" id="verdictText"></div>
-      <div class="confidence" id="confidenceText"></div>
+      <div class="verdict-meta" id="verdictMeta"></div>
     </div>
-    <div class="info-row"><span>RISK SCORE</span><span id="riskScore">0/100</span></div>
-    <div class="risk-bar"><div class="risk-fill" id="riskFill" style="width:0%"></div></div>
-    <div class="section-title">SUMMARY</div>
-    <div class="summary-text" id="summaryText"></div>
-    <div class="section-title">RED FLAGS DETECTED</div>
-    <div id="flagsList"></div>
-    <div class="section-title">RECOMMENDATION</div>
-    <div class="rec-box" id="recBox"></div>
-    <div style="text-align:center;margin-top:20px;">
-      <button class="btn btn-primary" onclick="reset()">SCAN ANOTHER IMAGE</button>
+
+    <div class="card">
+      <div class="info-row"><span>RISK SCORE</span><span id="riskScore">0/100</span></div>
+      <div class="risk-bar"><div class="risk-fill" id="riskFill" style="width:0%"></div></div>
+
+      <div class="section-title">AI ANALYSIS</div>
+      <div class="summary-text" id="summaryText"></div>
+
+      <div class="section-title">RED FLAGS DETECTED</div>
+      <div id="flagsList"></div>
+
+      <div class="section-title">RECOMMENDATION</div>
+      <div class="rec-box" id="recBox"></div>
+
+      <div style="text-align:center;margin-top:20px;">
+        <button class="btn btn-primary" onclick="resetScan()" style="width:auto;padding:12px 28px;">
+          SCAN MORE IMAGES
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-let selectedFile = null;
+let selectedFiles = [];
 
 async function init() {
-  const me = await fetch("/api/auth/me").then(r=>r.json());
-  if (!me.loggedIn) { window.location.href="/login"; return; }
-  const st = await fetch("/api/premium/status").then(r=>r.json());
-  if (!st.isPremium) {
-    document.getElementById("lockView").style.display="block";
-    document.getElementById("uploadView").style.display="none";
+  const me = await fetch("/api/auth/me", {credentials:"include"}).then(r=>r.json());
+  if (!me.loggedIn) { window.location.replace("/login"); return; }
+
+  const st = await fetch("/api/premium/status", {credentials:"include"}).then(r=>r.json());
+
+  if (st.isPremium) {
+    // Premium - show upload with unlimited badge
+    document.getElementById("scanTierBadge").innerHTML =
+      '<div style="background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.2);border-radius:8px;padding:8px 14px;font-family:Share Tech Mono,monospace;font-size:11px;color:var(--cyan);margin-bottom:14px;text-align:center">⭐ PREMIUM — Unlimited scans</div>';
+    return;
+  }
+
+  // Free user - check scans used
+  const scanData = await fetch("/api/scan/count", {credentials:"include"}).then(r=>r.json());
+  const used = scanData.count || 0;
+  const limit = 2;
+  const remaining = Math.max(0, limit - used);
+
+  if (remaining === 0) {
+    // Show lock
+    document.getElementById("lockView").style.display = "block";
+    document.getElementById("uploadView").style.display = "none";
+  } else {
+    // Show free tier badge
+    document.getElementById("scanTierBadge").innerHTML =
+      `<div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:8px;padding:10px 14px;font-family:Share Tech Mono,monospace;font-size:11px;color:#ffd700;margin-bottom:14px;text-align:center">
+        🆓 FREE PLAN — <b>${remaining} free scan${remaining===1?'':'s'} remaining</b> (${used}/${limit} used)
+        &nbsp;·&nbsp; <a href="/pricing" style="color:var(--cyan);text-decoration:none">Upgrade for unlimited →</a>
+      </div>`;
   }
 }
 
-function handleFile(file) {
-  if (!file) return;
-  selectedFile = file;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = document.getElementById("preview");
-    img.src = e.target.result; img.style.display="block";
-  };
-  reader.readAsDataURL(file);
-  document.getElementById("scanBtn").disabled = false;
+function handleFiles(files) {
+  const newFiles = Array.from(files);
+  // Max 5 total
+  const remaining = 5 - selectedFiles.length;
+  const toAdd = newFiles.slice(0, remaining);
+  selectedFiles = [...selectedFiles, ...toAdd];
+  renderPreviews();
+}
+
+function renderPreviews() {
+  const grid = document.getElementById("previewsGrid");
+  const count = document.getElementById("previewCount");
+  grid.innerHTML = selectedFiles.map((f, i) => {
+    const url = URL.createObjectURL(f);
+    return `<div class="preview-item">
+      <img src="${url}" alt="Image ${i+1}"/>
+      <button class="preview-remove" onclick="removeFile(${i})">✕</button>
+    </div>`;
+  }).join("");
+  count.textContent = selectedFiles.length > 0 ? `${selectedFiles.length} image${selectedFiles.length>1?'s':''} selected (max 5)` : "";
+  document.getElementById("scanBtn").disabled = selectedFiles.length === 0;
+  // Update button text
+  document.getElementById("scanBtn").textContent = selectedFiles.length > 1
+    ? `🔍 SCAN ${selectedFiles.length} IMAGES FOR SCAMS`
+    : "🔍 SCAN FOR SCAMS";
+}
+
+function removeFile(index) {
+  selectedFiles.splice(index, 1);
+  renderPreviews();
 }
 
 // Drag & drop
 const dz = document.getElementById("dropZone");
 dz.addEventListener("dragover", e => { e.preventDefault(); dz.classList.add("drag"); });
 dz.addEventListener("dragleave", () => dz.classList.remove("drag"));
-dz.addEventListener("drop", e => { e.preventDefault(); dz.classList.remove("drag"); handleFile(e.dataTransfer.files[0]); });
+dz.addEventListener("drop", e => {
+  e.preventDefault(); dz.classList.remove("drag");
+  handleFiles(e.dataTransfer.files);
+});
 
-async function scanImage() {
-  if (!selectedFile) return;
-  document.getElementById("uploadCard").style.display="none";
-  document.getElementById("scanningCard").style.display="block";
-  const form = new FormData(); form.append("image", selectedFile);
-  const data = await fetch("/api/scan", { method:"POST", body: form }).then(r=>r.json());
-  document.getElementById("scanningCard").style.display="none";
-  if (data.error) { alert(data.error); document.getElementById("uploadCard").style.display="block"; return; }
-  showResult(data);
+async function scanImages() {
+  if (!selectedFiles.length) return;
+  document.getElementById("uploadCard").style.display = "none";
+  document.getElementById("errorCard").style.display = "none";
+  document.getElementById("resultCard").style.display = "none";
+  document.getElementById("scanningCard").style.display = "block";
+
+  const count = selectedFiles.length;
+  document.getElementById("scanStatus").textContent = count > 1
+    ? `ANALYZING ${count} IMAGES...`
+    : "ANALYZING IMAGE...";
+  document.getElementById("scanDetail").textContent = count > 1
+    ? `AI is checking all ${count} images together for scams and phishing...`
+    : "AI is checking for scams, phishing and fake content...";
+
+  const form = new FormData();
+  selectedFiles.forEach(f => form.append("images", f));
+
+  try {
+    const data = await fetch("/api/scan", {
+      method: "POST",
+      credentials: "include",
+      body: form
+    }).then(r=>r.json());
+
+    document.getElementById("scanningCard").style.display = "none";
+
+    if (data.error) {
+      if (data.requiresPremium) {
+        // Show upgrade prompt instead of redirecting
+        document.getElementById("uploadCard").style.display = "block";
+        document.getElementById("uploadView").style.display = "none";
+        document.getElementById("lockView").style.display = "block";
+        return;
+      }
+      document.getElementById("errorMsg").textContent = data.error;
+      document.getElementById("errorCard").style.display = "block";
+      document.getElementById("uploadCard").style.display = "block";
+      return;
+    }
+    showResult(data);
+  } catch(e) {
+    document.getElementById("scanningCard").style.display = "none";
+    document.getElementById("errorMsg").textContent = "Connection error. Please try again.";
+    document.getElementById("errorCard").style.display = "block";
+    document.getElementById("uploadCard").style.display = "block";
+  }
 }
 
 function showResult(d) {
   const icons = { SAFE:"✅", SUSPICIOUS:"⚠️", SCAM:"🚨" };
   const colors = { SAFE:"#00ff88", SUSPICIOUS:"#ffd700", SCAM:"#ff3860" };
-  document.getElementById("verdictBanner").className = "verdict-banner "+d.verdict;
-  document.getElementById("verdictIcon").textContent = icons[d.verdict]||"❓";
+
+  const banner = document.getElementById("verdictBanner");
+  banner.className = "verdict-banner " + d.verdict;
+  document.getElementById("verdictIcon").textContent = icons[d.verdict] || "❓";
   document.getElementById("verdictText").textContent = d.verdict;
-  document.getElementById("confidenceText").textContent = "Confidence: "+d.confidence+" | Risk Score: "+d.risk_score+"/100";
-  document.getElementById("riskScore").textContent = d.risk_score+"/100";
-  document.getElementById("riskFill").style.width = d.risk_score+"%";
-  document.getElementById("riskFill").style.background = colors[d.verdict]||"var(--cyan)";
-  document.getElementById("summaryText").textContent = d.summary||"";
+  document.getElementById("verdictMeta").innerHTML =
+    `Confidence: ${d.confidence} &nbsp;|&nbsp; Risk Score: ${d.risk_score}/100` +
+    (d.images_analyzed > 1 ? `<br><span class="images-badge">📸 ${d.images_analyzed} images analyzed together</span>` : "");
+
+  document.getElementById("riskScore").textContent = d.risk_score + "/100";
+  document.getElementById("riskFill").style.width = d.risk_score + "%";
+  document.getElementById("riskFill").style.background = colors[d.verdict] || "var(--cyan)";
+  document.getElementById("summaryText").textContent = d.summary || "";
   document.getElementById("flagsList").innerHTML = d.red_flags?.length
-    ? d.red_flags.map(f=>`<div class="flag">⚠️ ${f}</div>`).join("")
-    : '<div style="color:var(--dim);font-family:Share Tech Mono,monospace;font-size:12px">No red flags detected.</div>';
-  document.getElementById("recBox").textContent = d.recommendation||"";
-  document.getElementById("resultCard").style.display="block";
+    ? d.red_flags.map(f => `<div class="flag">⚠️ ${f}</div>`).join("")
+    : `<div style="color:var(--green);font-family:Share Tech Mono,monospace;font-size:13px">✅ No red flags detected.</div>`;
+  document.getElementById("recBox").textContent = d.recommendation || "";
+  document.getElementById("resultCard").style.display = "block";
+  document.getElementById("resultCard").scrollIntoView({ behavior:"smooth" });
 }
 
-function reset() {
-  selectedFile=null;
-  document.getElementById("preview").style.display="none";
-  document.getElementById("scanBtn").disabled=true;
-  document.getElementById("resultCard").style.display="none";
-  document.getElementById("uploadCard").style.display="block";
+function resetScan() {
+  selectedFiles = [];
+  document.getElementById("previewsGrid").innerHTML = "";
+  document.getElementById("previewCount").textContent = "";
+  document.getElementById("scanBtn").disabled = true;
+  document.getElementById("scanBtn").textContent = "🔍 SCAN FOR SCAMS";
+  document.getElementById("resultCard").style.display = "none";
+  document.getElementById("errorCard").style.display = "none";
+  document.getElementById("uploadCard").style.display = "block";
+  document.getElementById("fileInput").value = "";
+  window.scrollTo({ top: 0, behavior:"smooth" });
 }
 
 init();

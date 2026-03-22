@@ -185,6 +185,14 @@ body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-h
   .bubble{max-width:92%;}
 }
 
+
+.tier-badge{padding:10px 16px;border-radius:8px;font-family:"Share Tech Mono",monospace;font-size:11px;margin-bottom:14px;text-align:center;}
+.tier-badge.premium{background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.2);color:var(--cyan);}
+.tier-badge.free{background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);color:var(--yellow);}
+.tier-badge.locked{background:rgba(255,56,96,0.06);border:1px solid rgba(255,56,96,0.2);color:#ff8099;}
+.tier-badge a{color:var(--cyan);text-decoration:none;}
+.tier-badge a:hover{text-decoration:underline;}
+
 </style>
 </head>
 <body>
@@ -208,7 +216,8 @@ body{background:var(--bg);color:var(--text);font-family:"Exo 2",sans-serif;min-h
   </div>
 
   <!-- INPUT BOX -->
-  <div class="scan-box">
+  <div id="tierBar"></div>
+<div class="scan-box">
     <div class="input-row">
       <input type="text" class="url-input" id="urlInput" placeholder="Enter website URL — e.g. example.com or https://mysite.com" onkeydown="if(event.key==='Enter')startScan()"/>
       <button class="scan-btn" id="scanBtn" onclick="startScan()">SCAN NOW</button>
@@ -522,7 +531,7 @@ function renderResults(d) {
 }
 
 async function loadHistory() {
-  const data = await fetch("/api/scanner/history").then(r=>r.json());
+  const data = await fetch("/api/scanner/history",{credentials:"include"}).then(r=>r.json());
   const section = document.getElementById("historySection");
   const body = document.getElementById("historyBody");
   if (!data.scans?.length) { section.style.display = "none"; return; }

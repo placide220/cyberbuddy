@@ -20,9 +20,18 @@ const email_service = require("./email");
 
 const app    = express();
 const makeId = () => crypto.randomBytes(16).toString("hex");
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024, files: 5 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Only images allowed"), false);
+  }
+});
 
 const FREE_CHAT_LIMIT = parseInt(process.env.FREE_CHAT_LIMIT || "10");
+const FREE_SCAN_LIMIT    = parseInt(process.env.FREE_SCAN_LIMIT    || "2");
+const FREE_SCANNER_LIMIT = parseInt(process.env.FREE_SCANNER_LIMIT || "2");
 const PREMIUM_PRICE   = parseFloat(process.env.PREMIUM_PRICE_USD || "2");
 
 // ── SECURITY MIDDLEWARE ──────────────────────────────────────────
@@ -117,19 +126,20 @@ if (process.env.GOOGLE_CLIENT_ID && !process.env.GOOGLE_CLIENT_ID.startsWith("yo
 }
 
 
-// Sessions — stored in PostgreSQL (survive restarts!)
+// Sessions — works on both HTTP and HTTPS
 app.use(session({
-  store: new PgSession({ pool, tableName: "sessions", createTableIfMissing: false }),
-  secret: process.env.SESSION_SECRET || "change_this_secret",
-  resave: false,
-  saveUninitialized: false,
+  store: new PgSession({ pool, tableName: "sessions", createTableIfMissing: true }),
+  secret: process.env.SESSION_SECRET || "cyberbuddy2024secret",
+  resave: true,
+  saveUninitialized: true,
+  rolling: true,
+  name: "cb.sid",
   cookie: {
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
-  },
-  proxy: true
+    secure: false,
+    httpOnly: false,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    sameSite: false
+  }
 }));
 
 // ── HELPERS ──────────────────────────────────────────────────────
@@ -393,32 +403,60 @@ EXAMPLES:
 });
 
 // ── IMAGE SCAN (PREMIUM) ──────────────────────────────────────────
-app.post("/api/scan", requireAuth, upload.single("image"), async (req, res) => {
+app.post("/api/scan", requireAuth, upload.array("images", 5), async (req, res) => {
   try {
     const user = await getUser(req.session.userId);
-    if (!isPremium(user)) return res.json({ error: "Premium feature. Upgrade to scan images! 🔒", requiresPremium: true });
-    if (!req.file) return res.json({ error: "No image uploaded." });
+    // Allow 2 free scans per user, unlimited for premium
+    if (!isPremium(user)) {
+      const scanCount = await query("SELECT COUNT(*) FROM image_scans WHERE user_id=$1", [req.session.userId]);
+      const totalScans = parseInt(scanCount.rows[0].count || 0);
+      if (totalScans >= FREE_SCAN_LIMIT) {
+        return res.json({
+          error: `You have used your ${FREE_SCAN_LIMIT} free scans. Upgrade to Premium for unlimited scanning! 🔒`,
+          requiresPremium: true,
+          scansUsed: totalScans,
+          scansLimit: FREE_SCAN_LIMIT
+        });
+      }
+    }
+    const files = req.files || (req.file ? [req.file] : []);
+    if (!files.length) return res.json({ error: "No images uploaded." });
     const key = process.env.ANTHROPIC_API_KEY;
     if (!key || key.startsWith("your_")) return res.json({ error: "Image scanning not configured. Add ANTHROPIC_API_KEY to .env" });
-    const base64 = req.file.buffer.toString("base64");
+
+    // Build content array with all images
+    const imageContents = files.map(f => ({
+      type: "image",
+      source: { type: "base64", media_type: f.mimetype, data: f.buffer.toString("base64") }
+    }));
+
+    const prompt = files.length > 1
+      ? `Analyze these ${files.length} images together for cybersecurity threats. Look for: phishing signs, fake websites, scam messages, suspicious links, urgency tactics, grammar errors, fake logos, social engineering, fake login pages.
+
+Respond ONLY in this exact JSON format:
+{"verdict":"SAFE"|"SUSPICIOUS"|"SCAM","confidence":"HIGH"|"MEDIUM"|"LOW","risk_score":0-100,"red_flags":["flag1","flag2"],"summary":"2-3 sentence explanation covering all images","recommendation":"What the user should do","images_analyzed":${files.length}}`
+      : `Analyze this image for cybersecurity threats. Look for: phishing, fake websites, scam messages, suspicious links, urgency tactics, grammar errors, fake logos, social engineering.
+
+Respond ONLY in this exact JSON format:
+{"verdict":"SAFE"|"SUSPICIOUS"|"SCAM","confidence":"HIGH"|"MEDIUM"|"LOW","risk_score":0-100,"red_flags":["flag1"],"summary":"2-3 sentence explanation","recommendation":"What user should do","images_analyzed":1}`;
+
     const resp = await axios.post("https://api.anthropic.com/v1/messages", {
       model: "claude-opus-4-5", max_tokens: 1024,
       messages: [{ role: "user", content: [
-        { type: "image", source: { type: "base64", media_type: req.file.mimetype, data: base64 } },
-        { type: "text", text: `Analyze this image for cybersecurity threats. Look for: phishing, fake websites, scam messages, suspicious links, urgency tactics, grammar errors, fake logos, social engineering.
-
-Respond ONLY in this exact JSON format:
-{"verdict":"SAFE"|"SUSPICIOUS"|"SCAM","confidence":"HIGH"|"MEDIUM"|"LOW","risk_score":0-100,"red_flags":["flag1"],"summary":"2-3 sentence explanation","recommendation":"What user should do"}` }
+        ...imageContents,
+        { type: "text", text: prompt }
       ]}]
     }, { headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" } });
+
     let result;
     try { result = JSON.parse(resp.data.content[0].text.match(/\{[\s\S]*\}/)[0]); }
-    catch { result = { verdict:"SUSPICIOUS", confidence:"LOW", risk_score:50, red_flags:[], summary: resp.data.content[0].text, recommendation:"Review carefully." }; }
+    catch { result = { verdict:"SUSPICIOUS", confidence:"LOW", risk_score:50, red_flags:[], summary: resp.data.content[0].text, recommendation:"Review carefully.", images_analyzed: files.length }; }
+
     await query(
       "INSERT INTO image_scans(id,user_id,verdict,confidence,risk_score,summary,red_flags,recommendation) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
       [makeId(), req.session.userId, result.verdict, result.confidence, result.risk_score, result.summary, JSON.stringify(result.red_flags||[]), result.recommendation]
     );
-    logger.info("Image scanned", { userId: req.session.userId, verdict: result.verdict });
+    logger.info("Image scan completed", { userId: req.session.userId, verdict: result.verdict, count: files.length });
     res.json({ success: true, ...result });
   } catch(e) { logger.error("Scan error", { error: e.message }); res.json({ error: "Scan failed: "+e.message }); }
 });
@@ -701,6 +739,15 @@ app.get("/reset-password",  pub("reset-password.html"));
 app.get("/forgot-password", pub("forgot-password.html"));
 app.get("/scanner",     pub("scanner.html"));
 
+
+
+/* ── SCAN COUNT ──────────────────────────────────────────────────*/
+app.get("/api/scan/count", requireAuth, async (req, res) => {
+  try {
+    const r = await query("SELECT COUNT(*) FROM image_scans WHERE user_id=$1", [req.session.userId]);
+    res.json({ count: parseInt(r.rows[0].count || 0), limit: parseInt(process.env.FREE_SCAN_LIMIT || "2") });
+  } catch(e) { res.json({ count: 0, limit: 2 }); }
+});
 
 /* ── SECURITY SCANNER ───────────────────────────────────────────*/
 app.post("/api/scanner/scan", requireAuth, async (req, res) => {
