@@ -115,8 +115,9 @@ nano .env
 The minimum required variables to get started:
 
 ```env
-DATABASE_URL=your_neon_postgresql_url
-GROQ_API_KEY=your_groq_api_key
+DATABASE_URL=postgresql://neondb_owner:npg_37XmQahJnPey@ep-fancy-silence-a4jxk23h-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+GROQ_API_KEY=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
+ANTHROPIC_API_KEY=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
 SESSION_SECRET=any_long_random_string
 APP_URL=http://localhost:3000
 ```
