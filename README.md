@@ -7,6 +7,7 @@
 **CyberBuddy** is an AI-powered cybersecurity education platform built for students across Africa.
 It combines an intelligent chatbot, daily quizzes, scam detection tools, and a website security scanner
 into one accessible, mobile-friendly web application.
+Link to my platform:https://cyberbuddy-2.onrender.com/
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-00f5ff?style=for-the-badge)](https://cyberbuddy.onrender.com)
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-green?style=for-the-badge&logo=node.js)](https://nodejs.org)
